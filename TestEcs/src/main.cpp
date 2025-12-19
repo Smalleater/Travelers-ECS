@@ -3,7 +3,7 @@
 
 #include "TRA/ecs/engine.hpp"
 
-constexpr size_t ENTITY_COUNT = 1000000;
+constexpr size_t ENTITY_COUNT = 100000;
 
 using namespace tra;
 
@@ -43,13 +43,28 @@ struct CreateEntitySystem : public ecs::ISystem
 
 struct AddTestComponentSystem : public ecs::ISystem
 {
-	TestComponent0 testComponent;
-
 	void update(ecs::Engine* _engine) override
 	{
+		TestComponent0 testComponent0;
+		TestComponent1 testComponent1;
+		TestComponent2 testComponent2;
+
 		for (size_t i = 0; i < ENTITY_COUNT; i++)
 		{
-			_engine->addComponentToEntity<TestComponent0>(entities[i], testComponent);
+			int result = i % 3;
+			if (result == 0)
+			{
+				_engine->addComponentToEntity<TestComponent0>(entities[i], testComponent0);
+			}
+			else if (result == 1)
+			{
+				_engine->addComponentToEntity<TestComponent1>(entities[i], testComponent1);
+			}
+			else if (result == 2)
+			{
+				_engine->addComponentToEntity<TestComponent0>(entities[i], testComponent0);
+				_engine->addComponentToEntity<TestComponent2>(entities[i], testComponent2);
+			}
 		}
 	}
 };
@@ -146,7 +161,7 @@ int main()
 	std::cout << "Create ECS\n";
 	ecs::Engine ecsEngine;
 
-	for (size_t i = 0; i < ENTITY_COUNT; i++)
+	/*for (size_t i = 0; i < ENTITY_COUNT; i++)
 	{
 		entities[i] = ecsEngine.createEntity();
 	}
@@ -170,17 +185,17 @@ int main()
 			ecsEngine.addComponentToEntity<TestComponent0>(entities[i], testComponent0);
 			ecsEngine.addComponentToEntity<TestComponent2>(entities[i], testComponent2);
 		}
-	}
+	}*/
 
-	//ecsEngine.addBeginUpdateSystem<CreateEntitySystem>();
+	ecsEngine.addBeginUpdateSystem<CreateEntitySystem>();
 	//ecsEngine.addBeginUpdateSystem<AddTestComponentSystem>();
 	//ecsEngine.addBeginUpdateSystem<GetTestComponentSystem>();
 	//ecsEngine.addBeginUpdateSystem<QuerryWithTestSystem>();
 	//ecsEngine.addBeginUpdateSystem<QuerryWithoutTestSystem>();
-	ecsEngine.addBeginUpdateSystem<QuerryEntityBufferTestSystem>();
+	//ecsEngine.addBeginUpdateSystem<QuerryEntityBufferTestSystem>();
 
 	//ecsEngine.addEndUpdateSystem<RemoveTestComponentSystem>();
-	//ecsEngine.addEndUpdateSystem<DeleteEntitySystem>();
+	ecsEngine.addEndUpdateSystem<DeleteEntitySystem>();
 
 	std::cout << "End Init\n";
 

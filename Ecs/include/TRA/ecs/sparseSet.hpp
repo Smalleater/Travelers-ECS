@@ -18,6 +18,7 @@ namespace tra::ecs
 	struct ISparseSet
 	{
 		virtual ~ISparseSet() = default;
+		virtual void remove(const Entity& _entity) = 0;
 	};
 
 	template<typename Component>
@@ -40,12 +41,11 @@ namespace tra::ecs
 			m_denseToEntity.push_back(_entity);
 		}
 
-		void remove(const Entity& _entity)
+		void remove(const Entity& _entity) override
 		{
 			auto it = m_sparse.find(_entity);
 			if (it == m_sparse.end())
 			{
-				TRA_WARNING_LOG(("Ecs: Attempted to remove non-existent component for entity with Id: " + TRA_ENTITY_TO_STRING(_entity)).c_str());
 				return;
 			}
 			else
