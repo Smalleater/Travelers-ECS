@@ -11,7 +11,7 @@
 
 #include "TRA/ecs/utils.hpp"
 #include "TRA/ecs/entity.hpp"
-#include "TRA/ecs/iComponent.hpp"
+#include "TRA/ecs/iComponent.hpp" 
 
 namespace tra::ecs
 {
@@ -28,64 +28,69 @@ namespace tra::ecs
 		SparseSet() = default;
 		~SparseSet() = default;
 
+		bool contains(const Entity& _entity)
+		{
+			if (_entity.m_id >= m_sparse.size())
+			{
+				return false;
+			}
+
+			size_t index = m_sparse[_entity.m_id];
+			return index < m_dense.size() && m_entities[index].m_version == _entity.m_version;
+		}
+
 		void insert(const Entity& _entity, const Component& _component)
 		{
-			if (m_sparse.find(_entity) != m_sparse.end())
+			if (_entity.m_id >= m_sparse.size())
 			{
-				TRA_WARNING_LOG(("Ecs: Attempted to insert duplicate component for entity with Id: " + TRA_ENTITY_TO_STRING(_entity)).c_str());
+				m_sparse.resize(_entity.m_id + 1, N_POS);
+			}
+
+			if (contains(_entity))
+			{
+				m_dense[m_sparse[_entity.m_id]] = _component;
 				return;
 			}
 
-			m_sparse[_entity] = m_dense.size();
-			m_dense.emplace_back(_component);
-			m_denseToEntity.push_back(_entity);
+			size_t index = m_dense.size();
+			m_dense.push_back(_component);
+			m_entities.push_back(_entity);
+			m_sparse[_entity.m_id] = index;
 		}
 
-		void remove(const Entity& _entity) override
+		void remove(const Entity& _entity)
 		{
-			auto it = m_sparse.find(_entity);
-			if (it == m_sparse.end())
+			if (!contains(_entity))
 			{
 				return;
 			}
-			else
-			{
-				size_t denseIndex = it->second;
-				size_t lastDenseIndex = m_dense.size() - 1;
 
-				if (denseIndex != lastDenseIndex)
-				{
-					m_dense[denseIndex] = m_dense[lastDenseIndex];
-					m_denseToEntity[denseIndex] = m_denseToEntity[lastDenseIndex];
-					m_sparse[m_denseToEntity[denseIndex]] = denseIndex;
-				}
+			size_t index = m_sparse[_entity.m_id];
+			size_t lastIndex = m_dense.size() - 1;
+			Entity lastEntity = m_entities[lastIndex];
 
-				m_dense.pop_back();
-				m_denseToEntity.pop_back();
-				m_sparse.erase(it);
-			}
+			m_dense[index] = m_dense[lastIndex];
+			m_entities[index] = m_entities[lastIndex];
+
+			m_sparse[lastEntity.m_id] = index;
+
+			m_dense.pop_back();
+			m_entities.pop_back();
+			m_sparse[_entity.m_id] = N_POS;
 		}
 
-		Component* get(const Entity& _entity)
+		Component& get(const Entity& _entity)
 		{
-			auto it = m_sparse.find(_entity);
-			if (it == m_sparse.end())
-			{
-				return nullptr;
-			}
-
-			return &m_dense[it->second];
-		}
-
-		bool hasComponent(const Entity& _entity)
-		{
-			return m_sparse.find(_entity) != m_sparse.end();
+			assert(contains(_entity) && "Ecs: SparseSet does not contain the component for the given entity");
+			return m_dense[m_sparse[_entity.m_id]];
 		}
 
 	private:
+		static constexpr size_t N_POS = std::numeric_limits<size_t>::max();
+
 		std::vector<Component> m_dense;
-		std::vector<Entity> m_denseToEntity;
-		std::unordered_map<Entity, size_t> m_sparse;
+		std::vector<Entity> m_entities;
+		std::vector<size_t> m_sparse;
 	};
 }
 

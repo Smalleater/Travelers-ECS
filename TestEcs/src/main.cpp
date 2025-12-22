@@ -46,25 +46,10 @@ struct AddTestComponentSystem : public ecs::ISystem
 	void update(ecs::Engine* _engine) override
 	{
 		TestComponent0 testComponent0;
-		TestComponent1 testComponent1;
-		TestComponent2 testComponent2;
 
 		for (size_t i = 0; i < ENTITY_COUNT; i++)
 		{
-			int result = i % 3;
-			if (result == 0)
-			{
-				_engine->addComponentToEntity<TestComponent0>(entities[i], testComponent0);
-			}
-			else if (result == 1)
-			{
-				_engine->addComponentToEntity<TestComponent1>(entities[i], testComponent1);
-			}
-			else if (result == 2)
-			{
-				_engine->addComponentToEntity<TestComponent0>(entities[i], testComponent0);
-				_engine->addComponentToEntity<TestComponent2>(entities[i], testComponent2);
-			}
+			_engine->addComponentToEntity<TestComponent0>(entities[i], testComponent0);
 		}
 	}
 };
@@ -73,18 +58,14 @@ struct GetTestComponentSystem : public ecs::ISystem
 {
 	void update(ecs::Engine* _engine) override
 	{
-		TestComponent0* testComponent;
+		TestComponent0 testComponent;
 		for (size_t i = 0; i < ENTITY_COUNT; i++)
 		{
-			testComponent = nullptr;
 			if (_engine->entityHasComponent<TestComponent0>(entities[i]))
 			{
 				testComponent = _engine->getEntityComponent<TestComponent0>(entities[i]);
-				if (testComponent)
-				{
-					++testComponent->test;
-					--testComponent->test;
-				}
+				++testComponent.test;
+				--testComponent.test;
 			}
 		}
 	}
@@ -164,9 +145,9 @@ int main()
 	/*for (size_t i = 0; i < ENTITY_COUNT; i++)
 	{
 		entities[i] = ecsEngine.createEntity();
-	}
+	}*/
 
-	TestComponent0 testComponent0;
+	/*TestComponent0 testComponent0;
 	TestComponent1 testComponent1;
 	TestComponent2 testComponent2;
 	for (size_t i = 0; i < ENTITY_COUNT; i++)
