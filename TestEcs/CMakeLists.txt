@@ -15,6 +15,7 @@ add_executable(tra_testEcs ${SOURCES})
 # Include directories
 target_include_directories(tra_testEcs 
 	PRIVATE 
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
 		${CMAKE_SOURCE_DIR}/include
 )
 

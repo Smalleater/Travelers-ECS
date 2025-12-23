@@ -1,6 +1,8 @@
 #ifndef TRA_ECS_ENTITY_HPP
 #define TRA_ECS_ENTITY_HPP
 
+#include "TRA/export.hpp"
+
 #include <cstdint>
 #include <functional>
 
@@ -11,7 +13,7 @@ namespace tra::ecs
 
 	struct Entity
 	{
-		static const Entity Null;
+		TRA_API static const Entity Null;
 
 		EntityId m_id : 24;
 		EntityVersion m_version : 8;
@@ -19,6 +21,11 @@ namespace tra::ecs
 		bool operator==(const Entity& _other) const noexcept
 		{
 			return m_id == _other.m_id && m_version == _other.m_version;
+		}
+
+		bool operator!=(const Entity& _other) const noexcept
+		{
+			return !(*this == _other);
 		}
 	};
 }

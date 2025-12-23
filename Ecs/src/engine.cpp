@@ -23,8 +23,8 @@ namespace tra::ecs
 	void Engine::deleteEntity(Entity _entity)
 	{
 		assert(m_entityManager != nullptr && "Ecs: EntityManager does not exist");
-		m_entityBuffer->removeEntity(_entity);
-		//m_componentManager->removeAllComponentFromEntity(_entity);
+		//m_entityBuffer->removeEntity(_entity);
+		m_componentManager->removeAllComponentFromEntity(_entity);
 		m_entityManager->Delete(_entity);
 	}
 

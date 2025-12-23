@@ -36,26 +36,36 @@ namespace tra::ecs
 			}
 
 			size_t index = m_sparse[_entity.m_id];
-			return index < m_dense.size() && m_entities[index].m_version == _entity.m_version;
+			return index < m_dense.size() 
+				&& m_entities[index] != Entity::Null 
+				&& m_entities[index].m_version == _entity.m_version;
 		}
 
 		void insert(const Entity& _entity, const Component& _component)
 		{
-			if (_entity.m_id >= m_sparse.size())
-			{
-				m_sparse.resize(_entity.m_id + 1, N_POS);
-			}
-
 			if (contains(_entity))
 			{
 				m_dense[m_sparse[_entity.m_id]] = _component;
 				return;
 			}
 
-			size_t index = m_dense.size();
-			m_dense.push_back(_component);
-			m_entities.push_back(_entity);
-			m_sparse[_entity.m_id] = index;
+			if (_entity.m_id >= m_sparse.size())
+			{
+				m_sparse.resize(_entity.m_id + 1, N_POS);
+			}
+
+			if (m_sparse[_entity.m_id] == N_POS)
+			{
+				size_t index = m_dense.size();
+				m_dense.push_back(_component);
+				m_entities.push_back(_entity);
+				m_sparse[_entity.m_id] = index;
+
+				return;
+			}
+
+			m_entities[m_sparse[_entity.m_id]] = _entity;
+			m_dense[m_sparse[_entity.m_id]] = _component;
 		}
 
 		void remove(const Entity& _entity)
@@ -65,18 +75,8 @@ namespace tra::ecs
 				return;
 			}
 
-			size_t index = m_sparse[_entity.m_id];
-			size_t lastIndex = m_dense.size() - 1;
-			Entity lastEntity = m_entities[lastIndex];
-
-			m_dense[index] = m_dense[lastIndex];
-			m_entities[index] = m_entities[lastIndex];
-
-			m_sparse[lastEntity.m_id] = index;
-
-			m_dense.pop_back();
-			m_entities.pop_back();
-			m_sparse[_entity.m_id] = N_POS;
+			m_dense[m_sparse[_entity.m_id]] = Component{};
+			m_entities[m_sparse[_entity.m_id]] = Entity::Null;
 		}
 
 		Component& get(const Entity& _entity)
