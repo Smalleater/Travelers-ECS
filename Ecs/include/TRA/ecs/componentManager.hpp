@@ -54,9 +54,9 @@ namespace tra::ecs
 		{
 			QueryKey queryKey = makeQueryKey<Component...>();
 			size_t entitiesHash = hashEntities(_entities);
-			QueryWithEntitiesKey* cacheKey = new QueryWithEntitiesKey{ queryKey, entitiesHash };
+			QueryWithEntitiesKey cacheKey{ queryKey, entitiesHash };
 
-			auto it = m_entityQueryWithCache.find(*cacheKey);
+			auto it = m_entityQueryWithCache.find(cacheKey);
 			if (it != m_entityQueryWithCache.end())
 			{
 				return it->second;
@@ -73,7 +73,7 @@ namespace tra::ecs
 				}
 			}
 
-			m_entityQueryWithCache[*cacheKey] = result;
+			m_entityQueryWithCache[cacheKey] = result;
 			return result;
 		}
 
@@ -82,9 +82,9 @@ namespace tra::ecs
 		{
 			QueryKey queryKey = makeQueryKey<Component...>();
 			size_t entitiesHash = hashEntities(_entities);
-			QueryWithEntitiesKey* cacheKey = new QueryWithEntitiesKey{ queryKey, entitiesHash };
+			QueryWithEntitiesKey cacheKey{ queryKey, entitiesHash };
 
-			auto it = m_entityQueryWithoutCache.find(*cacheKey);
+			auto it = m_entityQueryWithoutCache.find(cacheKey);
 			if (it != m_entityQueryWithoutCache.end())
 			{
 				return it->second;
@@ -101,7 +101,7 @@ namespace tra::ecs
 				}
 			}
 
-			m_entityQueryWithoutCache[*cacheKey] = result;
+			m_entityQueryWithoutCache[cacheKey] = result;
 			return result;
 		}
 
@@ -111,7 +111,7 @@ namespace tra::ecs
 		std::unordered_map<QueryWithEntitiesKey, std::vector<Entity>> m_entityQueryWithCache;
 		std::unordered_map<QueryWithEntitiesKey, std::vector<Entity>> m_entityQueryWithoutCache;
 
-		std::unordered_map<Entity, std::unordered_set<QueryWithEntitiesKey*>> m_entityToCacheKeys;
+		std::unordered_map<Entity, std::unordered_set<QueryWithEntitiesKey>> m_entityToCacheKeys;
 
 		template<typename Component>
 		SparseSet<Component>* getOrCreateComponentSparseSet()
@@ -185,10 +185,10 @@ namespace tra::ecs
 			auto it = m_entityToCacheKeys.find(_entity);
 			if (it != m_entityToCacheKeys.end())
 			{
-				for (auto cachePtr : it->second)
+				for (const auto& cachePtr : it->second)
 				{
-					m_entityQueryWithCache.erase(*cachePtr);
-					m_entityQueryWithoutCache.erase(*cachePtr);
+					m_entityQueryWithCache.erase(cachePtr);
+					m_entityQueryWithoutCache.erase(cachePtr);
 				}
 			}
 		}
