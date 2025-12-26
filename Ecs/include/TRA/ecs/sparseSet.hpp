@@ -21,14 +21,14 @@ namespace tra::ecs
 		virtual void remove(const Entity& _entity) = 0;
 	};
 
-	template<typename Component>
+	template<typename T>
 	class SparseSet : public ISparseSet
 	{
 	public:
 		SparseSet() = default;
 		~SparseSet() = default;
 
-		bool contains(const Entity& _entity)
+		bool contains(const Entity& _entity) const noexcept
 		{
 			if (_entity.m_id >= m_sparse.size())
 			{
@@ -41,11 +41,11 @@ namespace tra::ecs
 				&& m_entities[index].m_version == _entity.m_version;
 		}
 
-		void insert(const Entity& _entity, const Component& _component)
+		void insert(const Entity& _entity, const T& _value)
 		{
 			if (contains(_entity))
 			{
-				m_dense[m_sparse[_entity.m_id]] = _component;
+				m_dense[m_sparse[_entity.m_id]] = _value;
 				return;
 			}
 
@@ -57,7 +57,7 @@ namespace tra::ecs
 			if (m_sparse[_entity.m_id] == N_POS)
 			{
 				size_t index = m_dense.size();
-				m_dense.push_back(_component);
+				m_dense.push_back(_value);
 				m_entities.push_back(_entity);
 				m_sparse[_entity.m_id] = index;
 
@@ -65,7 +65,7 @@ namespace tra::ecs
 			}
 
 			m_entities[m_sparse[_entity.m_id]] = _entity;
-			m_dense[m_sparse[_entity.m_id]] = _component;
+			m_dense[m_sparse[_entity.m_id]] = _value;
 		}
 
 		void remove(const Entity& _entity)
@@ -75,20 +75,20 @@ namespace tra::ecs
 				return;
 			}
 
-			m_dense[m_sparse[_entity.m_id]] = Component{};
+			m_dense[m_sparse[_entity.m_id]] = T{};
 			m_entities[m_sparse[_entity.m_id]] = Entity::Null;
 		}
 
-		Component& get(const Entity& _entity)
+		T& get(const Entity& _entity)
 		{
-			assert(contains(_entity) && "Ecs: SparseSet does not contain the component for the given entity");
+			assert(contains(_entity) && "Ecs: SparseSet does not contain the value for the given entity");
 			return m_dense[m_sparse[_entity.m_id]];
 		}
 
 	private:
 		static constexpr size_t N_POS = std::numeric_limits<size_t>::max();
 
-		std::vector<Component> m_dense;
+		std::vector<T> m_dense;
 		std::vector<Entity> m_entities;
 		std::vector<size_t> m_sparse;
 	};

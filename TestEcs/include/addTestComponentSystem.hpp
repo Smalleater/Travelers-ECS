@@ -10,6 +10,8 @@ struct AddTestComponentSystem : public ecs::ISystem
 {
     void update(ecs::Engine* _engine) override
     {
+        auto start = std::chrono::high_resolution_clock::now();
+
         TestComponent0 c0;   TestComponent1 c1;   TestComponent2 c2;   TestComponent3 c3;   TestComponent4 c4;
         TestComponent5 c5;   TestComponent6 c6;   TestComponent7 c7;   TestComponent8 c8;   TestComponent9 c9;
         TestComponent10 c10; TestComponent11 c11; TestComponent12 c12; TestComponent13 c13; TestComponent14 c14;
@@ -139,6 +141,10 @@ struct AddTestComponentSystem : public ecs::ISystem
             case 99: _engine->addComponentToEntity<TestComponent99>(entities[i], c99); _engine->addComponentToEntity<TestComponent0>(entities[i], c0); _engine->addComponentToEntity<TestComponent1>(entities[i], c1); break;
             }
         }
+
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+        std::cout << "AddTestComponent duration: " << duration << " microseconds\n";
     }
 };
 

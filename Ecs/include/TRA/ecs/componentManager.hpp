@@ -119,14 +119,14 @@ namespace tra::ecs
 			static_assert(std::is_base_of<IComponent, Component>::value, "Ecs: Component must derive from IComponent");
 
 			size_t hashCode = typeid(Component).hash_code();
-			auto it = m_sparseSets.find(hashCode);
-			if (it != m_sparseSets.end())
+			auto [it, inserted] = m_sparseSets.try_emplace(hashCode, nullptr);
+
+			if (inserted)
 			{
-				return static_cast<SparseSet<Component>*>(it->second.get());
+				it->second = std::make_unique<SparseSet<Component>>();
 			}
 
-			m_sparseSets[hashCode] = std::make_unique<SparseSet<Component>>();
-			return static_cast<SparseSet<Component>*>(m_sparseSets[hashCode].get());
+			return static_cast<SparseSet<Component>*>(it->second.get());
 		}
 
 		template<typename... Component>

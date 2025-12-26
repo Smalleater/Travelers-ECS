@@ -17,21 +17,40 @@ namespace tra::ecs
 
 	void EntityBuffer::addEntity(const Entity _entity)
 	{
-		m_entities.push_back(_entity);
+		if (_entity.m_id >= m_entities.size())
+		{
+			m_entities.resize(_entity.m_id + 1, Entity::Null);
+		}
+
+		m_entities[_entity.m_id] = _entity;
 	}
 
 	void EntityBuffer::removeEntity(const Entity _entity)
 	{
-		auto it = std::find(m_entities.begin(), m_entities.end(), _entity);
-		if (it != m_entities.end())
+		if (_entity.m_id >= m_entities.size())
 		{
-			*it = m_entities.back();
-			m_entities.pop_back();
+			return;
+		}
+
+		if (m_entities[_entity.m_id] == _entity)
+		{
+			m_entities[_entity.m_id] = Entity::Null;
 		}
 	}
 
 	std::vector<Entity> EntityBuffer::getEntities()
 	{
+		std::vector<Entity> entitiesToReturn;
+		entitiesToReturn.reserve(m_entities.size());
+
+		for (auto entity : m_entities)
+		{
+			if (entity != Entity::Null)
+			{
+				entitiesToReturn.push_back(entity);
+			}
+		}
+
 		return m_entities;
 	}
 }

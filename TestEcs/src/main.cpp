@@ -107,6 +107,12 @@ int main()
 	std::cout << "Create ECS\n";
 	ecs::Engine ecsEngine;
 
+	/*CreateEntitySystem createEntity;
+	createEntity.update(&ecsEngine);
+
+	AddTestComponentSystem addTestComponent;
+	addTestComponent.update(&ecsEngine);*/
+
 	ecsEngine.addBeginUpdateSystem<CreateEntitySystem>();
 	ecsEngine.addBeginUpdateSystem<AddTestComponentSystem>();
 	//ecsEngine.addBeginUpdateSystem<GetTestComponentSystem>();
