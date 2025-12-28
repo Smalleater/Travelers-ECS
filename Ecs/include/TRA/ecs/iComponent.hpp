@@ -3,10 +3,10 @@
 
 namespace tra::ecs
 {
-	struct IComponent
-	{
-		virtual ~IComponent() = default;
-	};
+    struct IComponent
+    {
+        virtual ~IComponent() = default;
+    };
 }
 
 #endif

@@ -5,7 +5,7 @@
 
 using namespace tra;
 
-constexpr size_t ENTITY_COUNT = 1000000;
+constexpr size_t ENTITY_COUNT = 100000;
 std::vector<ecs::Entity> entities(ENTITY_COUNT);
 
 #endif

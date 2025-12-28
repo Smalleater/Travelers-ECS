@@ -4,10 +4,14 @@
 #include <algorithm>
 #include <memory>
 #include <unordered_set>
+#include <typeindex>
+#include <utility>
 
 #include "TRA/debugUtils.hpp"
 #include "TRA/ecs/sparseSet.hpp"
 #include "TRA/ecs/queryKey.hpp"
+#include "TRA/ecs/iComponent.hpp"
+#include "TRA/ecs/componentFactoryRegistry.hpp"
 
 namespace tra::ecs
 {
@@ -25,6 +29,9 @@ namespace tra::ecs
 			invalidateCachesForComponent<Component>();
 		}
 
+		void addComponentToEntity(const std::type_index& _type, 
+			std::vector<std::pair<Entity, std::unique_ptr<IComponent>>>&& _vector);
+
 		template<typename Component>
 		void removeComponentFromEntity(const Entity& _entity)
 		{
@@ -34,6 +41,7 @@ namespace tra::ecs
 		}
 
 		void removeAllComponentFromEntity(const Entity& _entity);
+		void removeAllComponentFromEntities(const std::vector<Entity>& _entities);
 
 		template<typename Component>
 		Component& getEntityComponent(const Entity& _entity)
@@ -106,7 +114,7 @@ namespace tra::ecs
 		}
 
 	private:
-		std::unordered_map<size_t, std::shared_ptr<ISparseSet>> m_sparseSets;
+		std::unordered_map<std::type_index, std::shared_ptr<ISparseSet>> m_sparseSets;
 
 		std::unordered_map<QueryWithEntitiesKey, std::vector<Entity>> m_entityQueryWithCache;
 		std::unordered_map<QueryWithEntitiesKey, std::vector<Entity>> m_entityQueryWithoutCache;
@@ -118,16 +126,21 @@ namespace tra::ecs
 		{
 			static_assert(std::is_base_of<IComponent, Component>::value, "Ecs: Component must derive from IComponent");
 
-			size_t hashCode = typeid(Component).hash_code();
-			auto [it, inserted] = m_sparseSets.try_emplace(hashCode, nullptr);
+			std::type_index type = std::type_index(typeid(Component));
+			auto [it, inserted] = m_sparseSets.try_emplace(type, nullptr);
 
 			if (inserted)
 			{
-				it->second = std::make_unique<SparseSet<Component>>();
+				auto factory = ComponentFactoryRegistry::getFactory(type);
+				assert(factory != nullptr && "Ecs: Component factory not registered");
+
+				it->second = factory();
 			}
 
 			return static_cast<SparseSet<Component>*>(it->second.get());
 		}
+
+		ISparseSet* getOrCreateComponentSparseSet(const std::type_index& _type);
 
 		template<typename... Component>
 		QueryKey makeQueryKey() const

@@ -7,6 +7,7 @@
 
 #include "component.hpp"
 #include "addTestComponentSystem.hpp"
+#include "querryEntityBufferTestSystem.hpp"
 
 struct CreateEntitySystem : public ecs::ISystem
 {
@@ -58,27 +59,6 @@ struct QuerryWithoutTestSystem : public ecs::ISystem
 	}
 };
 
-struct QuerryEntityBufferTestSystem : public ecs::ISystem
-{
-	void update(ecs::Engine* _engine) override
-	{
-		std::vector<ecs::Entity> queryResult;
-		queryResult = _engine->queryEntity()
-			->queryEntityWith<TestComponent0>()
-			->getEntities();
-
-		queryResult = _engine->queryEntity()
-			->queryEntityWith<TestComponent0>()
-			->queryEntityWithout<TestComponent1>()
-			->getEntities();
-
-		queryResult = _engine->queryEntity()
-			->queryEntityWith<TestComponent0, TestComponent2>()
-			->queryEntityWithout<TestComponent1>()
-			->getEntities();
-	}
-};
-
 
 struct RemoveTestComponentSystem : public ecs::ISystem
 {
@@ -107,21 +87,21 @@ int main()
 	std::cout << "Create ECS\n";
 	ecs::Engine ecsEngine;
 
-	/*CreateEntitySystem createEntity;
+	CreateEntitySystem createEntity;
 	createEntity.update(&ecsEngine);
 
 	AddTestComponentSystem addTestComponent;
-	addTestComponent.update(&ecsEngine);*/
+	addTestComponent.update(&ecsEngine);
 
-	ecsEngine.addBeginUpdateSystem<CreateEntitySystem>();
-	ecsEngine.addBeginUpdateSystem<AddTestComponentSystem>();
+	//ecsEngine.addBeginUpdateSystem<CreateEntitySystem>();
+	//ecsEngine.addBeginUpdateSystem<AddTestComponentSystem>();
 	//ecsEngine.addBeginUpdateSystem<GetTestComponentSystem>();
 	//ecsEngine.addBeginUpdateSystem<QuerryWithTestSystem>();
 	//ecsEngine.addBeginUpdateSystem<QuerryWithoutTestSystem>();
-	//ecsEngine.addBeginUpdateSystem<QuerryEntityBufferTestSystem>();
+	ecsEngine.addBeginUpdateSystem<QuerryEntityBufferTestSystem>();
 
 	//ecsEngine.addEndUpdateSystem<RemoveTestComponentSystem>();
-	ecsEngine.addEndUpdateSystem<DeleteEntitySystem>();
+	//ecsEngine.addEndUpdateSystem<DeleteEntitySystem>();
 
 	std::cout << "End Init\n";
 
@@ -131,17 +111,11 @@ int main()
 
 		ecsEngine.beginUpdate();
 
-		auto end = std::chrono::high_resolution_clock::now();
-		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-		std::cout << "Begin Update duration: " << duration << " microseconds\n";
-
-		start = std::chrono::high_resolution_clock::now();
-
 		ecsEngine.endUpdate();
 
-		end = std::chrono::high_resolution_clock::now();
-		duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-		std::cout << "End duration: " << duration << " microseconds\n";
+		auto end = std::chrono::high_resolution_clock::now();
+		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+		std::cout << "Update duration: " << duration << " microseconds\n";
 	}
 
 	return 0;

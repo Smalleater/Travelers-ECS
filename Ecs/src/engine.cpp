@@ -22,10 +22,7 @@ namespace tra::ecs
 
 	void Engine::deleteEntity(Entity _entity)
 	{
-		assert(m_entityManager != nullptr && "Ecs: EntityManager does not exist");
-		m_entityBuffer->removeEntity(_entity);
-		m_componentManager->removeAllComponentFromEntity(_entity);
-		m_entityManager->Delete(_entity);
+		m_deleteEntityBuffer.push_back(_entity);
 	}
 
 	void Engine::beginUpdate()
@@ -38,6 +35,17 @@ namespace tra::ecs
 	{
 		assert(m_systemManager != nullptr && "Ecs: SystemManager does not exist");
 		m_systemManager->endUpdate(this);
+
+		assert(m_entityManager != nullptr && "Ecs: EntityManager does not exist");
+		m_componentManager->removeAllComponentFromEntities(m_deleteEntityBuffer);
+
+		for (const auto& entity : m_deleteEntityBuffer)
+		{
+			m_entityBuffer->removeEntity(entity);
+			m_entityManager->Delete(entity);
+		}
+
+		m_deleteEntityBuffer.clear();
 	}
 
 	std::shared_ptr<EntityBuffer> Engine::queryEntity()

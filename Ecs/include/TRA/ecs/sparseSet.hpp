@@ -11,14 +11,16 @@
 
 #include "TRA/ecs/utils.hpp"
 #include "TRA/ecs/entity.hpp"
-#include "TRA/ecs/iComponent.hpp" 
+#include "TRA/ecs/iComponent.hpp"
 
 namespace tra::ecs
 {
 	struct ISparseSet
 	{
 		virtual ~ISparseSet() = default;
+		virtual void insert(std::vector<std::pair<Entity, std::unique_ptr<IComponent>>>&& _vector) = 0;
 		virtual void remove(const Entity& _entity) = 0;
+		virtual void remove(const std::vector<Entity>& _entities) = 0;
 	};
 
 	template<typename T>
@@ -60,6 +62,14 @@ namespace tra::ecs
 			m_sparse[_entity.m_id] = index;
 		}
 
+		void insert(std::vector<std::pair<Entity, std::unique_ptr<IComponent>>>&& _vector) override
+		{
+			for (auto&& [entity, coponentPtr] : _vector)
+			{
+				insert(entity, *static_cast<T*>(coponentPtr.get()));
+			}
+		}
+
 		void remove(const Entity& _entity)
 		{
 			if (!contains(_entity))
@@ -80,6 +90,14 @@ namespace tra::ecs
 			m_dense.pop_back();
 			m_entities.pop_back();
 			m_sparse[_entity.m_id] = N_POS;
+		}
+
+		void remove(const std::vector<Entity>& _entities) override
+		{
+			for (const auto& entity : _entities)
+			{
+				remove(entity);
+			}
 		}
 
 		T& get(const Entity& _entity)

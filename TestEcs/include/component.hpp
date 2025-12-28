@@ -4,118 +4,118 @@
 #include <string>
 #include <cstdint>
 
-#include "TRA/ecs/iComponent.hpp"
-
+#include "TRA/ecs/component.hpp"
 #include "common.hpp"
 
-struct TestComponent0 : ecs::IComponent { uint16_t test = 2006; std::string string = "Hello"; };
-struct TestComponent1 : ecs::IComponent { std::string string = "HelloWorld"; };
-struct TestComponent2 : ecs::IComponent { uint64_t test0 = 2006, test1 = 2006, test2 = 2006, test3 = 2006, test4 = 2006, test5 = 2006; };
-struct TestComponent3 : ecs::IComponent { int32_t value = 42; std::string name = "Component3"; };
-struct TestComponent4 : ecs::IComponent { float x = 1.0f, y = 2.0f, z = 3.0f; };
-struct TestComponent5 : ecs::IComponent { bool active = true; };
-struct TestComponent6 : ecs::IComponent { double position[3] = { 0.0, 0.0, 0.0 }; };
-struct TestComponent7 : ecs::IComponent { uint8_t level = 5; std::string description = "Level7"; };
-struct TestComponent8 : ecs::IComponent { int64_t id = 123456789; };
-struct TestComponent9 : ecs::IComponent { std::string message = "TestComponent9"; bool enabled = false; };
+TRA_CREATE_COMPONENT(TestComponent0, uint16_t test = 2006; std::string string = "Hello";)
+TRA_CREATE_COMPONENT(TestComponent1, std::string string = "HelloWorld";)
+TRA_CREATE_COMPONENT(TestComponent2, uint64_t test0 = 2006, test1 = 2006, test2 = 2006, test3 = 2006, test4 = 2006, test5 = 2006;)
+TRA_CREATE_COMPONENT(TestComponent3, int32_t value = 42; std::string name = "Component3";)
+TRA_CREATE_COMPONENT(TestComponent4, float x = 1.0f, y = 2.0f, z = 3.0f;)
+TRA_CREATE_COMPONENT(TestComponent5, bool active = true;)
+TRA_CREATE_COMPONENT(TestComponent6, double position[3] = { 0.0, 0.0, 0.0 };)
+TRA_CREATE_COMPONENT(TestComponent7, uint8_t level = 5; std::string description = "Level7";)
+TRA_CREATE_COMPONENT(TestComponent8, int64_t id = 123456789;)
+TRA_CREATE_COMPONENT(TestComponent9, std::string message = "TestComponent9"; bool enabled = false;)
 
-struct TestComponent10 : ecs::IComponent { uint32_t count = 10; std::string label = "Component10"; };
-struct TestComponent11 : ecs::IComponent { float speed = 3.14f; };
-struct TestComponent12 : ecs::IComponent { double matrix[4] = { 1.0, 0.0, 0.0, 1.0 }; };
-struct TestComponent13 : ecs::IComponent { bool visible = true; std::string tag = "C13"; };
-struct TestComponent14 : ecs::IComponent { int16_t code = 14; };
-struct TestComponent15 : ecs::IComponent { uint64_t data[2] = { 150, 250 }; };
-struct TestComponent16 : ecs::IComponent { float pos[3] = { 0.1f, 0.2f, 0.3f }; };
-struct TestComponent17 : ecs::IComponent { std::string name = "Component17"; int32_t value = 1700; };
-struct TestComponent18 : ecs::IComponent { bool flag = false; uint16_t id = 18; };
-struct TestComponent19 : ecs::IComponent { double x = 1.1, y = 2.2, z = 3.3; };
+TRA_CREATE_COMPONENT(TestComponent10, uint32_t count = 10; std::string label = "Component10";)
+TRA_CREATE_COMPONENT(TestComponent11, float speed = 3.14f;)
+TRA_CREATE_COMPONENT(TestComponent12, double matrix[4] = { 1.0, 0.0, 0.0, 1.0 };)
+TRA_CREATE_COMPONENT(TestComponent13, bool visible = true; std::string tag = "C13";)
+TRA_CREATE_COMPONENT(TestComponent14, int16_t code = 14;)
+TRA_CREATE_COMPONENT(TestComponent15, uint64_t data[2] = { 150, 250 };)
+TRA_CREATE_COMPONENT(TestComponent16, float pos[3] = { 0.1f, 0.2f, 0.3f };)
+TRA_CREATE_COMPONENT(TestComponent17, std::string name = "Component17"; int32_t value = 1700;)
+TRA_CREATE_COMPONENT(TestComponent18, bool flag = false; uint16_t id = 18;)
+TRA_CREATE_COMPONENT(TestComponent19, double x = 1.1, y = 2.2, z = 3.3;)
 
-struct TestComponent20 : ecs::IComponent { int8_t small = -20; };
-struct TestComponent21 : ecs::IComponent { std::string description = "Component21"; uint32_t score = 2100; };
-struct TestComponent22 : ecs::IComponent { float vec[2] = { 2.2f, 3.3f }; };
-struct TestComponent23 : ecs::IComponent { bool enabled = true; std::string label = "C23"; };
-struct TestComponent24 : ecs::IComponent { uint64_t values[3] = { 24, 48, 72 }; };
-struct TestComponent25 : ecs::IComponent { double angle = 25.5; };
-struct TestComponent26 : ecs::IComponent { int32_t health = 260; };
-struct TestComponent27 : ecs::IComponent { std::string title = "Component27"; bool active = false; };
-struct TestComponent28 : ecs::IComponent { float coordinates[3] = { 2.8f, 5.6f, 8.4f }; };
-struct TestComponent29 : ecs::IComponent { uint16_t level = 29; std::string info = "C29"; };
+TRA_CREATE_COMPONENT(TestComponent20, int8_t small = -20;)
+TRA_CREATE_COMPONENT(TestComponent21, std::string description = "Component21"; uint32_t score = 2100;)
+TRA_CREATE_COMPONENT(TestComponent22, float vec[2] = { 2.2f, 3.3f };)
+TRA_CREATE_COMPONENT(TestComponent23, bool enabled = true; std::string label = "C23";)
+TRA_CREATE_COMPONENT(TestComponent24, uint64_t values[3] = { 24, 48, 72 };)
+TRA_CREATE_COMPONENT(TestComponent25, double angle = 25.5;)
+TRA_CREATE_COMPONENT(TestComponent26, int32_t health = 260;)
+TRA_CREATE_COMPONENT(TestComponent27, std::string title = "Component27"; bool active = false;)
+TRA_CREATE_COMPONENT(TestComponent28, float coordinates[3] = { 2.8f, 5.6f, 8.4f };)
+TRA_CREATE_COMPONENT(TestComponent29, uint16_t level = 29; std::string info = "C29";)
 
-struct TestComponent30 : ecs::IComponent { int64_t bigNumber = 300000; };
-struct TestComponent31 : ecs::IComponent { bool isAlive = true; float velocity = 31.31f; };
-struct TestComponent32 : ecs::IComponent { std::string data = "Component32"; };
-struct TestComponent33 : ecs::IComponent { double coords[3] = { 3.3, 6.6, 9.9 }; };
-struct TestComponent34 : ecs::IComponent { uint32_t id = 34; bool active = false; };
-struct TestComponent35 : ecs::IComponent { int16_t code = 350; };
-struct TestComponent36 : ecs::IComponent { float matrix[4] = { 0.36f, 0.36f, 0.36f, 0.36f }; };
-struct TestComponent37 : ecs::IComponent { std::string name = "C37"; int32_t points = 370; };
-struct TestComponent38 : ecs::IComponent { bool flag = true; uint64_t data = 380; };
-struct TestComponent39 : ecs::IComponent { double pos[3] = { 3.9, 7.8, 11.7 }; };
+TRA_CREATE_COMPONENT(TestComponent30, int64_t bigNumber = 300000;)
+TRA_CREATE_COMPONENT(TestComponent31, bool isAlive = true; float velocity = 31.31f;)
+TRA_CREATE_COMPONENT(TestComponent32, std::string data = "Component32";)
+TRA_CREATE_COMPONENT(TestComponent33, double coords[3] = { 3.3, 6.6, 9.9 };)
+TRA_CREATE_COMPONENT(TestComponent34, uint32_t id = 34; bool active = false;)
+TRA_CREATE_COMPONENT(TestComponent35, int16_t code = 350;)
+TRA_CREATE_COMPONENT(TestComponent36, float matrix[4] = { 0.36f, 0.36f, 0.36f, 0.36f };)
+TRA_CREATE_COMPONENT(TestComponent37, std::string name = "C37"; int32_t points = 370;)
+TRA_CREATE_COMPONENT(TestComponent38, bool flag = true; uint64_t data = 380;)
+TRA_CREATE_COMPONENT(TestComponent39, double pos[3] = { 3.9, 7.8, 11.7 };)
 
-struct TestComponent40 : ecs::IComponent { uint8_t rank = 40; };
-struct TestComponent41 : ecs::IComponent { std::string description = "C41"; float x = 4.1f; };
-struct TestComponent42 : ecs::IComponent { int32_t value = 420; bool active = false; };
-struct TestComponent43 : ecs::IComponent { double coords[2] = { 4.3, 8.6 }; };
-struct TestComponent44 : ecs::IComponent { uint64_t id = 440; std::string label = "C44"; };
-struct TestComponent45 : ecs::IComponent { float speed = 4.5f; bool enabled = true; };
-struct TestComponent46 : ecs::IComponent { int16_t code = 460; };
-struct TestComponent47 : ecs::IComponent { std::string name = "Component47"; };
-struct TestComponent48 : ecs::IComponent { double values[3] = { 4.8, 9.6, 14.4 }; };
-struct TestComponent49 : ecs::IComponent { bool active = true; uint32_t score = 490; };
+TRA_CREATE_COMPONENT(TestComponent40, uint8_t rank = 40;)
+TRA_CREATE_COMPONENT(TestComponent41, std::string description = "C41"; float x = 4.1f;)
+TRA_CREATE_COMPONENT(TestComponent42, int32_t value = 420; bool active = false;)
+TRA_CREATE_COMPONENT(TestComponent43, double coords[2] = { 4.3, 8.6 };)
+TRA_CREATE_COMPONENT(TestComponent44, uint64_t id = 440; std::string label = "C44";)
+TRA_CREATE_COMPONENT(TestComponent45, float speed = 4.5f; bool enabled = true;)
+TRA_CREATE_COMPONENT(TestComponent46, int16_t code = 460;)
+TRA_CREATE_COMPONENT(TestComponent47, std::string name = "Component47";)
+TRA_CREATE_COMPONENT(TestComponent48, double values[3] = { 4.8, 9.6, 14.4 };)
+TRA_CREATE_COMPONENT(TestComponent49, bool active = true; uint32_t score = 490;)
 
-struct TestComponent50 : ecs::IComponent { int8_t small = -50; };
-struct TestComponent51 : ecs::IComponent { std::string info = "C51"; };
-struct TestComponent52 : ecs::IComponent { float vec[2] = { 5.2f, 10.4f }; };
-struct TestComponent53 : ecs::IComponent { bool enabled = false; std::string label = "C53"; };
-struct TestComponent54 : ecs::IComponent { uint64_t values[3] = { 54, 108, 162 }; };
-struct TestComponent55 : ecs::IComponent { double angle = 55.5; };
-struct TestComponent56 : ecs::IComponent { int32_t health = 560; };
-struct TestComponent57 : ecs::IComponent { std::string title = "Component57"; bool active = false; };
-struct TestComponent58 : ecs::IComponent { float coordinates[3] = { 5.8f, 11.6f, 17.4f }; };
-struct TestComponent59 : ecs::IComponent { uint16_t level = 59; std::string info = "C59"; };
+TRA_CREATE_COMPONENT(TestComponent50, int8_t small = -50;)
+TRA_CREATE_COMPONENT(TestComponent51, std::string info = "C51";)
+TRA_CREATE_COMPONENT(TestComponent52, float vec[2] = { 5.2f, 10.4f };)
+TRA_CREATE_COMPONENT(TestComponent53, bool enabled = false; std::string label = "C53";)
+TRA_CREATE_COMPONENT(TestComponent54, uint64_t values[3] = { 54, 108, 162 };)
+TRA_CREATE_COMPONENT(TestComponent55, double angle = 55.5;)
+TRA_CREATE_COMPONENT(TestComponent56, int32_t health = 560;)
+TRA_CREATE_COMPONENT(TestComponent57, std::string title = "Component57"; bool active = false;)
+TRA_CREATE_COMPONENT(TestComponent58, float coordinates[3] = { 5.8f, 11.6f, 17.4f };)
+TRA_CREATE_COMPONENT(TestComponent59, uint16_t level = 59; std::string info = "C59";)
 
-struct TestComponent60 : ecs::IComponent { int64_t bigNumber = 600000; };
-struct TestComponent61 : ecs::IComponent { bool isAlive = true; float velocity = 61.61f; };
-struct TestComponent62 : ecs::IComponent { std::string data = "Component62"; };
-struct TestComponent63 : ecs::IComponent { double coords[3] = { 6.3, 12.6, 18.9 }; };
-struct TestComponent64 : ecs::IComponent { uint32_t id = 64; bool active = false; };
-struct TestComponent65 : ecs::IComponent { int16_t code = 650; };
-struct TestComponent66 : ecs::IComponent { float matrix[4] = { 0.66f, 0.66f, 0.66f, 0.66f }; };
-struct TestComponent67 : ecs::IComponent { std::string name = "C67"; int32_t points = 670; };
-struct TestComponent68 : ecs::IComponent { bool flag = true; uint64_t data = 680; };
-struct TestComponent69 : ecs::IComponent { double pos[3] = { 6.9, 13.8, 20.7 }; };
+TRA_CREATE_COMPONENT(TestComponent60, int64_t bigNumber = 600000;)
+TRA_CREATE_COMPONENT(TestComponent61, bool isAlive = true; float velocity = 61.61f;)
+TRA_CREATE_COMPONENT(TestComponent62, std::string data = "Component62";)
+TRA_CREATE_COMPONENT(TestComponent63, double coords[3] = { 6.3, 12.6, 18.9 };)
+TRA_CREATE_COMPONENT(TestComponent64, uint32_t id = 64; bool active = false;)
+TRA_CREATE_COMPONENT(TestComponent65, int16_t code = 650;)
+TRA_CREATE_COMPONENT(TestComponent66, float matrix[4] = { 0.66f, 0.66f, 0.66f, 0.66f };)
+TRA_CREATE_COMPONENT(TestComponent67, std::string name = "C67"; int32_t points = 670;)
+TRA_CREATE_COMPONENT(TestComponent68, bool flag = true; uint64_t data = 680;)
+TRA_CREATE_COMPONENT(TestComponent69, double pos[3] = { 6.9, 13.8, 20.7 };)
 
-struct TestComponent70 : ecs::IComponent { uint8_t rank = 70; };
-struct TestComponent71 : ecs::IComponent { std::string description = "C71"; float x = 7.1f; };
-struct TestComponent72 : ecs::IComponent { int32_t value = 720; bool active = false; };
-struct TestComponent73 : ecs::IComponent { double coords[2] = { 7.3, 14.6 }; };
-struct TestComponent74 : ecs::IComponent { uint64_t id = 740; std::string label = "C74"; };
-struct TestComponent75 : ecs::IComponent { float speed = 7.5f; bool enabled = true; };
-struct TestComponent76 : ecs::IComponent { int16_t code = 760; };
-struct TestComponent77 : ecs::IComponent { std::string name = "Component77"; };
-struct TestComponent78 : ecs::IComponent { double values[3] = { 7.8, 15.6, 23.4 }; };
-struct TestComponent79 : ecs::IComponent { bool active = true; uint32_t score = 790; };
+TRA_CREATE_COMPONENT(TestComponent70, uint8_t rank = 70;)
+TRA_CREATE_COMPONENT(TestComponent71, std::string description = "C71"; float x = 7.1f;)
+TRA_CREATE_COMPONENT(TestComponent72, int32_t value = 720; bool active = false;)
+TRA_CREATE_COMPONENT(TestComponent73, double coords[2] = { 7.3, 14.6 };)
+TRA_CREATE_COMPONENT(TestComponent74, uint64_t id = 740; std::string label = "C74";)
+TRA_CREATE_COMPONENT(TestComponent75, float speed = 7.5f; bool enabled = true;)
+TRA_CREATE_COMPONENT(TestComponent76, int16_t code = 760;)
+TRA_CREATE_COMPONENT(TestComponent77, std::string name = "Component77";)
+TRA_CREATE_COMPONENT(TestComponent78, double values[3] = { 7.8, 15.6, 23.4 };)
+TRA_CREATE_COMPONENT(TestComponent79, bool active = true; uint32_t score = 790;)
 
-struct TestComponent80 : ecs::IComponent { int8_t small = -80; };
-struct TestComponent81 : ecs::IComponent { std::string info = "C81"; };
-struct TestComponent82 : ecs::IComponent { float vec[2] = { 8.2f, 16.4f }; };
-struct TestComponent83 : ecs::IComponent { bool enabled = false; std::string label = "C83"; };
-struct TestComponent84 : ecs::IComponent { uint64_t values[3] = { 84, 168, 252 }; };
-struct TestComponent85 : ecs::IComponent { double angle = 85.5; };
-struct TestComponent86 : ecs::IComponent { int32_t health = 860; };
-struct TestComponent87 : ecs::IComponent { std::string title = "Component87"; bool active = false; };
-struct TestComponent88 : ecs::IComponent { float coordinates[3] = { 8.8f, 17.6f, 26.4f }; };
-struct TestComponent89 : ecs::IComponent { uint16_t level = 89; std::string info = "C89"; };
+TRA_CREATE_COMPONENT(TestComponent80, int8_t small = -80;)
+TRA_CREATE_COMPONENT(TestComponent81, std::string info = "C81";)
+TRA_CREATE_COMPONENT(TestComponent82, float vec[2] = { 8.2f, 16.4f };)
+TRA_CREATE_COMPONENT(TestComponent83, bool enabled = false; std::string label = "C83";)
+TRA_CREATE_COMPONENT(TestComponent84, uint64_t values[3] = { 84, 168, 252 };)
+TRA_CREATE_COMPONENT(TestComponent85, double angle = 85.5;)
+TRA_CREATE_COMPONENT(TestComponent86, int32_t health = 860;)
+TRA_CREATE_COMPONENT(TestComponent87, std::string title = "Component87"; bool active = false;)
+TRA_CREATE_COMPONENT(TestComponent88, float coordinates[3] = { 8.8f, 17.6f, 26.4f };)
+TRA_CREATE_COMPONENT(TestComponent89, uint16_t level = 89; std::string info = "C89";)
 
-struct TestComponent90 : ecs::IComponent { int64_t bigNumber = 900000; };
-struct TestComponent91 : ecs::IComponent { bool isAlive = true; float velocity = 91.91f; };
-struct TestComponent92 : ecs::IComponent { std::string data = "Component92"; };
-struct TestComponent93 : ecs::IComponent { double coords[3] = { 9.3, 18.6, 27.9 }; };
-struct TestComponent94 : ecs::IComponent { uint32_t id = 94; bool active = false; };
-struct TestComponent95 : ecs::IComponent { int16_t code = 950; };
-struct TestComponent96 : ecs::IComponent { float matrix[4] = { 0.96f, 0.96f, 0.96f, 0.96f }; };
-struct TestComponent97 : ecs::IComponent { std::string name = "C97"; int32_t points = 970; };
-struct TestComponent98 : ecs::IComponent { bool flag = true; uint64_t data = 980; };
-struct TestComponent99 : ecs::IComponent { double pos[3] = { 9.9, 19.8, 29.7 }; };
+TRA_CREATE_COMPONENT(TestComponent90, int64_t bigNumber = 900000;)
+TRA_CREATE_COMPONENT(TestComponent91, bool isAlive = true; float velocity = 91.91f;)
+TRA_CREATE_COMPONENT(TestComponent92, std::string data = "Component92";)
+TRA_CREATE_COMPONENT(TestComponent93, double coords[3] = { 9.3, 18.6, 27.9 };)
+TRA_CREATE_COMPONENT(TestComponent94, uint32_t id = 94; bool active = false;)
+TRA_CREATE_COMPONENT(TestComponent95, int16_t code = 950;)
+TRA_CREATE_COMPONENT(TestComponent96, float matrix[4] = { 0.96f, 0.96f, 0.96f, 0.96f };)
+TRA_CREATE_COMPONENT(TestComponent97, std::string name = "C97"; int32_t points = 970;)
+TRA_CREATE_COMPONENT(TestComponent98, bool flag = true; uint64_t data = 980;)
+TRA_CREATE_COMPONENT(TestComponent99, double pos[3] = { 9.9, 19.8, 29.7 };)
+
 
 #endif

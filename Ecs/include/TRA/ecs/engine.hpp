@@ -4,6 +4,7 @@
 #include "TRA/export.hpp"
 
 #include <memory>
+#include <utility>
 
 #include "TRA/ecs/entityManager.hpp"
 #include "TRA/ecs/systemManager.hpp"
@@ -39,7 +40,7 @@ namespace tra::ecs
 		TRA_API void endUpdate();
 
 		template<typename Component>
-		void addComponentToEntity(const Entity& _entity, const Component& _component)
+		void addComponentToEntity(const Entity& _entity, Component&& _component)
 		{
 			assert(m_componentManager != nullptr && "Ecs: ComponentManager does not exist");
 			m_componentManager->addComponentToEntity<Component>(_entity, _component);
@@ -87,6 +88,8 @@ namespace tra::ecs
 		std::unique_ptr<SystemManager> m_systemManager;
 		std::shared_ptr<ComponentManager> m_componentManager;
 		std::shared_ptr<EntityBuffer> m_entityBuffer;
+
+		std::vector<Entity> m_deleteEntityBuffer;
 	};
 }
 
