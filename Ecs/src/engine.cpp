@@ -1,6 +1,7 @@
 #include "TRA/ecs/engine.hpp"
 
 #include "TRA/debugUtils.hpp"
+#include "TRA/ecs/component.hpp"
 
 namespace tra::ecs
 {
@@ -22,6 +23,12 @@ namespace tra::ecs
 
 	void Engine::deleteEntity(Entity _entity)
 	{
+		if (entityHasComponent<DeleteEntityTag>(_entity))
+		{
+			return;
+		}
+
+		addComponentToEntity<DeleteEntityTag>(_entity, DeleteEntityTag());
 		m_deleteEntityBuffer.push_back(_entity);
 	}
 

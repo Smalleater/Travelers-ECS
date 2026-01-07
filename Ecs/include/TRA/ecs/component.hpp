@@ -12,4 +12,6 @@ private: \
 	static inline tra::ecs::AutoRegisterComponent<NAME> m_registrar{}; \
 }; \
 
+TRA_CREATE_COMPONENT(DeleteEntityTag);
+
 #endif
