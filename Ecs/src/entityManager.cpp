@@ -10,13 +10,19 @@ namespace tra::ecs
 	{
 		if (m_freeEntity.empty())
 		{
-			if (m_entities.size() >= std::numeric_limits<EntityId>::max())
+			EntityId newId = static_cast<EntityId>(m_entities.size());
+
+			if (newId == 0)
 			{
-				TRA_ERROR_LOG("Ecs: Entity limit reached");
-				return Entity::Null;
+				newId = 1;
 			}
 
-			return m_entities.emplace_back(Entity{ static_cast<EntityId>(m_entities.size()), 0 });
+			if (m_entities.size() < newId)
+			{
+				m_entities.resize(newId);
+			}
+
+			return m_entities.emplace_back(Entity{ newId, 0 });
 		}
 
 		EntityId entityId = m_freeEntity.front();
@@ -27,6 +33,11 @@ namespace tra::ecs
 
 	void EntityManager::Delete(const Entity& _entity)
 	{
+		if (_entity.m_id == Entity::Null.m_id)
+		{
+			return;
+		}
+
 		++m_entities[_entity.m_id].m_version;
 		m_freeEntity.emplace(_entity.m_id);
 	}

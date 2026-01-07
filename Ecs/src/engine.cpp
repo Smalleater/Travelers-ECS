@@ -23,7 +23,7 @@ namespace tra::ecs
 
 	void Engine::deleteEntity(Entity _entity)
 	{
-		if (entityHasComponent<DeleteEntityTag>(_entity))
+		if (_entity.m_id == Entity::Null.m_id || entityHasComponent<DeleteEntityTag>(_entity))
 		{
 			return;
 		}
