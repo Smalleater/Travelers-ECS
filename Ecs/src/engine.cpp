@@ -28,7 +28,7 @@ namespace tra::ecs
 			return;
 		}
 
-		addComponentToEntity<DeleteEntityTag>(_entity, DeleteEntityTag());
+		addComponentToEntity<DeleteEntityTag>(_entity, DeleteEntityTag{});
 		m_deleteEntityBuffer.push_back(_entity);
 	}
 

@@ -43,7 +43,7 @@ namespace tra::ecs
 		void addComponentToEntity(const Entity& _entity, Component&& _component)
 		{
 			assert(m_componentManager != nullptr && "Ecs: ComponentManager does not exist");
-			m_componentManager->addComponentToEntity<Component>(_entity, _component);
+			m_componentManager->addComponentToEntity<Component>(_entity, std::move(_component));
 		}
 
 		template<typename Component>

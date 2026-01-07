@@ -18,7 +18,6 @@ namespace tra::ecs
 	struct ISparseSet
 	{
 		virtual ~ISparseSet() = default;
-		virtual void insert(std::vector<std::pair<Entity, std::unique_ptr<IComponent>>>&& _vector) = 0;
 		virtual void remove(const Entity& _entity) = 0;
 		virtual void remove(const std::vector<Entity>& _entities) = 0;
 	};
@@ -43,7 +42,7 @@ namespace tra::ecs
 				&& m_entities[index].m_version == _entity.m_version;
 		}
 
-		void insert(const Entity& _entity, const T& _value)
+		void insert(const Entity& _entity, T&& _value)
 		{
 			if (_entity.m_id >= m_sparse.size())
 			{
@@ -52,22 +51,14 @@ namespace tra::ecs
 
 			if (contains(_entity))
 			{
-				m_dense[m_sparse[_entity.m_id]] = _value;
+				m_dense[m_sparse[_entity.m_id]] = std::move(_value);
 				return;
 			}
 
 			size_t index = m_dense.size();
-			m_dense.push_back(_value);
+			m_dense.push_back(std::move(_value));
 			m_entities.push_back(_entity);
 			m_sparse[_entity.m_id] = index;
-		}
-
-		void insert(std::vector<std::pair<Entity, std::unique_ptr<IComponent>>>&& _vector) override
-		{
-			for (auto&& [entity, coponentPtr] : _vector)
-			{
-				insert(entity, *static_cast<T*>(coponentPtr.get()));
-			}
 		}
 
 		void remove(const Entity& _entity)

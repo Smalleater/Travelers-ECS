@@ -2,13 +2,6 @@
 
 namespace tra::ecs
 {
-	void ComponentManager::addComponentToEntity(const std::type_index& _type,
-		std::vector<std::pair<Entity, std::unique_ptr<IComponent>>>&& _vector)
-	{
-		ISparseSet* sparseSet = getOrCreateComponentSparseSet(_type);
-		sparseSet->insert(std::move(_vector));
-	}
-
 	void ComponentManager::removeAllComponentFromEntity(const Entity& _entity)
 	{
 		for (auto& [type, sparseSet] : m_sparseSets)

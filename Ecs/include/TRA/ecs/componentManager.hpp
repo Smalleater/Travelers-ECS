@@ -22,15 +22,12 @@ namespace tra::ecs
 		~ComponentManager() = default;
 
 		template<typename Component>
-		void addComponentToEntity(const Entity& _entity, const Component& _component)
+		void addComponentToEntity(const Entity& _entity, Component&& _component)
 		{
 			SparseSet<Component>* sparseSet = getOrCreateComponentSparseSet<Component>();
-			sparseSet->insert(_entity, _component);
+			sparseSet->insert(_entity, std::move(_component));
 			invalidateCachesForComponent<Component>();
 		}
-
-		void addComponentToEntity(const std::type_index& _type, 
-			std::vector<std::pair<Entity, std::unique_ptr<IComponent>>>&& _vector);
 
 		template<typename Component>
 		void removeComponentFromEntity(const Entity& _entity)
