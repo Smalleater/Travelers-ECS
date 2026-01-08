@@ -11,7 +11,7 @@ struct AddTestComponentSystem : public ecs::ISystem
     {
         for (size_t i = 0; i < ENTITY_COUNT; i++)
         {
-            int start = i % 100;
+            int start = rand() % 100;
 
             switch (start)
             {

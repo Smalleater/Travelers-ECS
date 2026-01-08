@@ -67,18 +67,24 @@ namespace tra::ecs
 				return it->second;
 			}
 
+			for (const Entity& entity : _entities)
+			{
+				m_entityToCacheKeys[entity].insert(cacheKey);
+			}
+
 			std::vector<Entity> result;
+			result.reserve(_entities.size());
 			for (const Entity& entity : _entities)
 			{
 				bool hasAll = (entityHasComponent<Component>(entity) && ...);
 				if (hasAll)
 				{
 					result.push_back(entity);
-					m_entityToCacheKeys[entity].insert(cacheKey);
 				}
 			}
 
 			m_entityQueryWithCache[cacheKey] = result;
+
 			return result;
 		}
 
@@ -95,18 +101,24 @@ namespace tra::ecs
 				return it->second;
 			}
 
-			std::vector<Entity> result;
 			for (const Entity& entity : _entities)
 			{
-				bool hasAll = (!entityHasComponent<Component>(entity) && ...);
-				if (hasAll)
+				m_entityToCacheKeys[entity].insert(cacheKey);
+			}
+
+			std::vector<Entity> result;
+			result.reserve(_entities.size());
+			for (const Entity& entity : _entities)
+			{
+				bool hasNone = (!entityHasComponent<Component>(entity) && ...);
+				if (hasNone)
 				{
 					result.push_back(entity);
-					m_entityToCacheKeys[entity].insert(cacheKey);
 				}
 			}
 
 			m_entityQueryWithoutCache[cacheKey] = result;
+
 			return result;
 		}
 
@@ -195,11 +207,13 @@ namespace tra::ecs
 			auto it = m_entityToCacheKeys.find(_entity);
 			if (it != m_entityToCacheKeys.end())
 			{
-				for (const auto& cachePtr : it->second)
+				for (const auto& cacheKey : it->second)
 				{
-					m_entityQueryWithCache.erase(cachePtr);
-					m_entityQueryWithoutCache.erase(cachePtr);
+					m_entityQueryWithCache.erase(cacheKey);
+					m_entityQueryWithoutCache.erase(cacheKey);
 				}
+
+				m_entityToCacheKeys.erase(it);
 			}
 		}
 	};
