@@ -48,6 +48,13 @@ namespace tra::ecs
 		}
 
 		template<typename Component>
+		std::vector<Component*> getEntitiesComponent(const std::vector<Entity>& _entities)
+		{
+			SparseSet<Component>* sparseSet = getOrCreateComponentSparseSet<Component>();
+			return sparseSet->get(_entities);
+		}
+
+		template<typename Component>
 		bool entityHasComponent(const Entity& _entity)
 		{
 			SparseSet<Component>* sparseSet = getOrCreateComponentSparseSet<Component>();

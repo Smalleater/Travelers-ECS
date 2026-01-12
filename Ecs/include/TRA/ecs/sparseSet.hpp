@@ -97,6 +97,19 @@ namespace tra::ecs
 			return m_dense[m_sparse[_entity.m_id]];
 		}
 
+		std::vector<T*> get(const std::vector<Entity>& _entities)
+		{
+			std::vector<T*> result;
+			result.resize(_entities.size());
+
+			for (size_t i = 0; i < _entities.size(); i++)
+			{
+				result[i] = &m_dense[m_sparse[_entities[i].m_id]];
+			}
+
+			return result;
+		}
+
 	private:
 		static constexpr size_t N_POS = std::numeric_limits<size_t>::max();
 

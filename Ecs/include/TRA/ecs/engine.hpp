@@ -67,6 +67,13 @@ namespace tra::ecs
 		}
 
 		template<typename Component>
+		std::vector<Component*> getEntitiesComponent(const std::vector<Entity>& _entities)
+		{
+			assert(m_componentManager != nullptr && "Ecs: ComponentManager does not exist");
+			return m_componentManager->getEntitiesComponent<Component>(_entities);
+		}
+
+		template<typename Component>
 		bool entityHasComponent(const Entity& _entity)
 		{
 			assert(m_componentManager != nullptr && "Ecs: ComponentManager does not exist");
