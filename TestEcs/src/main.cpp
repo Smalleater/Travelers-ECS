@@ -90,17 +90,17 @@ int main()
 	CreateEntitySystem createEntity;
 	createEntity.update(&ecsEngine);
 
-	AddTestComponentSystem addTestComponent;
-	addTestComponent.update(&ecsEngine);
+	/*AddTestComponentSystem addTestComponent;
+	addTestComponent.update(&ecsEngine);*/
 
 	//ecsEngine.addBeginUpdateSystem<CreateEntitySystem>();
-	//ecsEngine.addBeginUpdateSystem<AddTestComponentSystem>();
+	ecsEngine.addBeginUpdateSystem<AddTestComponentSystem>();
 	//ecsEngine.addBeginUpdateSystem<GetTestComponentSystem>();
 	//ecsEngine.addBeginUpdateSystem<QuerryWithTestSystem>();
 	//ecsEngine.addBeginUpdateSystem<QuerryWithoutTestSystem>();
 	ecsEngine.addBeginUpdateSystem<QuerryEntityBufferTestSystem>();
 
-	//ecsEngine.addEndUpdateSystem<RemoveTestComponentSystem>();
+	ecsEngine.addEndUpdateSystem<RemoveTestComponentSystem>();
 	//ecsEngine.addEndUpdateSystem<DeleteEntitySystem>();
 
 	std::cout << "End Init\n";

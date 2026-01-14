@@ -11,7 +11,9 @@ struct AddTestComponentSystem : public ecs::ISystem
     {
         for (size_t i = 0; i < ENTITY_COUNT; i++)
         {
-            int start = rand() % 100;
+            _engine->addComponentToEntity(entities[i], TestComponent0{});
+
+            /*int start = rand() % 100;
 
             switch (start)
             {
@@ -415,7 +417,7 @@ struct AddTestComponentSystem : public ecs::ISystem
                 _engine->addComponentToEntity(entities[i], TestComponent0{});
                 _engine->addComponentToEntity(entities[i], TestComponent1{});
                 break;
-            }
+            }*/
         }
     }
 };

@@ -74,6 +74,11 @@ namespace tra::ecs
 				return it->second;
 			}
 
+			for (size_t hash : queryKey.m_typeHashes)
+			{
+				m_componentToCacheKeys[hash].insert(cacheKey);
+			}
+
 			for (const Entity& entity : _entities)
 			{
 				m_entityToCacheKeys[entity].insert(cacheKey);
@@ -108,6 +113,11 @@ namespace tra::ecs
 				return it->second;
 			}
 
+			for (size_t hash : queryKey.m_typeHashes)
+			{
+				m_componentToCacheKeys[hash].insert(cacheKey);
+			}
+
 			for (const Entity& entity : _entities)
 			{
 				m_entityToCacheKeys[entity].insert(cacheKey);
@@ -135,6 +145,7 @@ namespace tra::ecs
 		std::unordered_map<QueryWithEntitiesKey, std::vector<Entity>> m_entityQueryWithCache;
 		std::unordered_map<QueryWithEntitiesKey, std::vector<Entity>> m_entityQueryWithoutCache;
 
+		std::unordered_map<size_t, std::unordered_set<QueryWithEntitiesKey>> m_componentToCacheKeys;
 		std::unordered_map<Entity, std::unordered_set<QueryWithEntitiesKey>> m_entityToCacheKeys;
 
 		template<typename Component>
@@ -182,30 +193,16 @@ namespace tra::ecs
 		{
 			size_t componentHash = typeid(Component).hash_code();
 
-			for (auto it = m_entityQueryWithCache.begin(); it != m_entityQueryWithCache.end();)
+			auto it = m_componentToCacheKeys.find(componentHash);
+			if (it != m_componentToCacheKeys.end())
 			{
-				const std::vector<size_t>& typeHashes = it->first.m_queryKey.m_typeHashes;
-				if (std::find(typeHashes.begin(), typeHashes.end(), componentHash) != typeHashes.end())
+				for (const auto& cacheKey : it->second)
 				{
-					it = m_entityQueryWithCache.erase(it);
+					m_entityQueryWithCache.erase(cacheKey);
+					m_entityQueryWithoutCache.erase(cacheKey);
 				}
-				else
-				{
-					++it;
-				}
-			}
 
-			for (auto it = m_entityQueryWithoutCache.begin(); it != m_entityQueryWithoutCache.end();)
-			{
-				const std::vector<size_t>& typeHashes = it->first.m_queryKey.m_typeHashes;
-				if (std::find(typeHashes.begin(), typeHashes.end(), componentHash) != typeHashes.end())
-				{
-					it = m_entityQueryWithoutCache.erase(it);
-				}
-				else
-				{
-					++it;
-				}
+				m_componentToCacheKeys.erase(it);
 			}
 		}
 
