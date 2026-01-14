@@ -16,6 +16,8 @@ namespace tra::ecs
 		TRA_API EntityManager();
 		~EntityManager() = default;
 
+		Entity createEntity();
+
 	private:
 		EntityId m_nextFreeId;
 
