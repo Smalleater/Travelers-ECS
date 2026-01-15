@@ -17,6 +17,7 @@ namespace tra::ecs
 		~EntityManager() = default;
 
 		Entity createEntity();
+		void deleteEntity(Entity _entity);
 
 	private:
 		EntityId m_nextFreeId;

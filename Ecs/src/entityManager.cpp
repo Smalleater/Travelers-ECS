@@ -15,7 +15,7 @@ namespace tra::ecs
 
 		if (!m_freeIds.empty())
 		{
-			EntityId id = m_freeIds.back();
+			id = m_freeIds.back();
 			m_freeIds.pop_back();
 		}
 		else
@@ -29,12 +29,27 @@ namespace tra::ecs
 
 			if (id >= m_entities.size())
 			{
-				m_entities.resize(id + 1);
+				m_entities.resize(id + 1, NULL_ENTITY);
+				m_signatures.resize(id + 1, NULL_ENTITY_SIGNATURE);
 			}
 		}
 
 		m_entities[id] = makeEntity(id, m_entities[id].version());
 
 		return m_entities[id];
+	}
+
+	void EntityManager::deleteEntity(Entity _entity)
+	{
+		if (_entity.id() == NULL_ENTITY.id()
+			|| _entity.id() >= m_entities.size())
+		{
+			return;
+		}
+
+		m_entities[_entity.id()] = makeEntity(_entity.id(), _entity.version() + 1);
+		m_signatures[_entity.id()] = NULL_ENTITY_SIGNATURE;
+
+		m_freeIds.push_back(_entity.id());
 	}
 }
