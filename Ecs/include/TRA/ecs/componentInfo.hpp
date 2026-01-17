@@ -9,7 +9,7 @@ namespace tra::ecs
 	{
 		uint16_t m_size;
 		uint8_t m_alignement;
-		uint8_t m_typeId;
+		uint8_t m_id;
 
 		const char* m_name;
 		

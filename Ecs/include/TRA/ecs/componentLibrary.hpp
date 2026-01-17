@@ -1,6 +1,8 @@
 #ifndef TRA_ECS_COMPONENT_LIBRARY_HPP
 #define TRA_ECS_COMPONENT_LIBRARY_HPP
 
+#include "TRA/export.hpp"
+
 #include <vector>
 
 #include "TRA/ecs/componentInfo.hpp"
@@ -13,12 +15,12 @@ namespace tra::ecs
 		template<typename T>
 		static uint8_t registerComponent()
 		{
-			uint8_t typeId = static_cast<uint8_t>(m_components.size());
+			uint8_t id = static_cast<uint8_t>(m_components.size());
 
 			ComponentInfo info;
 			info.m_size = sizeof(T);
 			info.m_alignement = alignof(T);
-			info.m_typeId = typeId;
+			info.m_id = id;
 			info.m_name = typeid(T).name();
 
 			if constexpr (!std::is_destructible_v<T>)
@@ -37,11 +39,13 @@ namespace tra::ecs
 
 			m_components.push_back(info);
 
-			return typeId;
+			return id;
 		}
 
+		TRA_API static const ComponentInfo& get(uint8_t _id);
+
 	private:
-		static inline std::vector<ComponentInfo> m_components;
+		TRA_API static inline std::vector<ComponentInfo> m_components;
 	};
 }
 
