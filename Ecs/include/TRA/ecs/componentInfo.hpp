@@ -12,10 +12,9 @@ namespace tra::ecs
 		uint8_t m_typeId;
 
 		const char* m_name;
-
-		void (*m_initFunc)(void*);
-		void (*m_copyFunc)(void*);
+		
 		void (*m_destroyFunc)(void*);
+		void (*m_moveFunc)(void*, void*);
 	};
 }
 
