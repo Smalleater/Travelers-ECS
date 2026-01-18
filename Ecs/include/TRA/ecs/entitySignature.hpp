@@ -15,6 +15,9 @@ namespace tra::ecs
 	{
 		ComponentMask m_components;
 		TagMask m_tags;
+
+		bool operator==(const EntitySignature& _other) const;
+		bool operator!=(const EntitySignature& _other) const;
 	};
 
 	constexpr EntitySignature NULL_ENTITY_SIGNATURE = EntitySignature{};
