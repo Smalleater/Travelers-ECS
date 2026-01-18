@@ -8,8 +8,8 @@ namespace tra::ecs
 	using EntityId = uint32_t;
 	using EntityVersion = uint32_t;
 
-	constexpr uint32_t ENTITY_INDEX_BITS = 24;
-	constexpr uint32_t ENTITY_VERSION_BITS = 8;
+	constexpr uint8_t ENTITY_INDEX_BITS = 24;
+	constexpr uint8_t ENTITY_VERSION_BITS = 8;
 
 	constexpr uint32_t ENTITY_INDEX_MASK = (1u << ENTITY_INDEX_BITS) - 1u;
 	constexpr uint32_t ENTITY_VERSION_MASK = (1u << ENTITY_VERSION_BITS) - 1u;

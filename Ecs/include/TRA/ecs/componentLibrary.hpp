@@ -19,7 +19,7 @@ namespace tra::ecs
 
 			ComponentInfo info;
 			info.m_size = sizeof(T);
-			info.m_alignement = alignof(T);
+			info.m_alignment = alignof(T);
 			info.m_id = id;
 			info.m_name = typeid(T).name();
 

@@ -55,10 +55,10 @@ int main()
 	const ecs::ComponentInfo& TestNonTrivialComponentInfo = ecs::ComponentLibrary::get(ecs::TestNonTrivialComponent::getId());
 
 	std::cout << "TestComponent info value - size: " << std::to_string(TestComponentInfo.m_size) << " alignement: " 
-		<< std::to_string(TestComponentInfo.m_alignement) << " id: " << std::to_string(TestComponentInfo.m_id) << std::endl;
+		<< std::to_string(TestComponentInfo.m_alignment) << " id: " << std::to_string(TestComponentInfo.m_id) << std::endl;
 
 	std::cout << "TestNonTrivialComponent info value: - size: " << std::to_string(TestNonTrivialComponentInfo.m_size) << " alignement: "
-		<< std::to_string(TestNonTrivialComponentInfo.m_alignement) << " id: " << std::to_string(TestNonTrivialComponentInfo.m_id) << std::endl;
+		<< std::to_string(TestNonTrivialComponentInfo.m_alignment) << " id: " << std::to_string(TestNonTrivialComponentInfo.m_id) << std::endl;
 
 	return 0;
 }
