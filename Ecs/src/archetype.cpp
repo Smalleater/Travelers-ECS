@@ -8,9 +8,17 @@
 
 namespace tra::ecs
 {
-	Archetype::Archetype(const std::vector<uint8_t>& _ids)
-		: m_componentIds(_ids)
+	Archetype::Archetype(const EntitySignature& _signature)
+		: m_entitySignature(_signature)
 	{
+		for (uint8_t i = 0; i < MAX_COMPONENTS; i++)
+		{
+			if (m_entitySignature.m_components.test(i))
+			{
+				m_componentIds.push_back(i);
+			}
+		}
+
 		m_layout = buildChunkLayout();
 	}
 

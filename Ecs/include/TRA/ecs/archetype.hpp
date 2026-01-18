@@ -2,6 +2,7 @@
 #define TRA_ECS_ARCHETYPE_HPP
 
 #include "TRA/ecs/chunk.hpp"
+#include "TRA/ecs/entitySignature.hpp"
 
 namespace tra::ecs
 {
@@ -10,10 +11,12 @@ namespace tra::ecs
 	class Archetype
 	{
 	public:
-		Archetype(const std::vector<uint8_t>& _ids);
+		Archetype(const EntitySignature& _signature);
 		~Archetype() = default;
 
 	private:
+		EntitySignature m_entitySignature;
+
 		std::vector<uint8_t> m_componentIds;
 		ChunkLayout m_layout;
 
