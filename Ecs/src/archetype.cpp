@@ -8,12 +8,12 @@
 
 namespace tra::ecs
 {
-	Archetype::Archetype(const EntitySignature& _signature)
-		: m_entitySignature(_signature)
+	Archetype::Archetype(const ArchetypeKey& _signature)
+		: m_archetypeKey(_signature)
 	{
 		for (uint8_t i = 0; i < MAX_COMPONENTS; i++)
 		{
-			if (m_entitySignature.hasComponent(i))
+			if (m_archetypeKey.hasComponent(i))
 			{
 				m_componentIds.push_back(i);
 			}

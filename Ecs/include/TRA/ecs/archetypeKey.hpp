@@ -14,6 +14,8 @@ namespace tra::ecs
 
 		bool operator==(const ArchetypeKey& _other) const;
 		bool operator!=(const ArchetypeKey& _other) const;
+
+		bool hasComponent(const uint8_t _componentId) const;
 	};
 }
 
@@ -22,13 +24,13 @@ namespace std
 	template<>
 	struct hash<tra::ecs::ArchetypeKey>
 	{
-		size_t operator()(const ArchetypeKey& _key) const
+		size_t operator()(const tra::ecs::ArchetypeKey& _key) const
 		{
 			size_t hash = 0;
 
-			for (size_t i = 0; i < COMPONENT_BLOCK; i++)
+			for (size_t i = 0; i < tra::ecs::COMPONENT_BLOCK; i++)
 			{
-				hash ^= std::hash<uint64_t>{}(_key.m_components[i]) + 0x9e3779b9 + (h << 6) + (h >> 2);
+				hash ^= std::hash<uint64_t>{}(_key.m_components[i]) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
 			}
 
 			return hash;

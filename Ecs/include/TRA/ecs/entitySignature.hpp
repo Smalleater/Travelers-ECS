@@ -26,12 +26,12 @@ namespace tra::ecs
 		void addComponent(const uint8_t _componentId);
 		void removeComponent(const uint8_t _componentId);
 
-		bool hasComponent(const uint8_t _componentId);
+		bool hasComponent(const uint8_t _componentId) const;
 
 		void addTag(const uint8_t _tagId);
 		void removeTag(const uint8_t _tagId);
 
-		bool hasTag(const uint8_t _tagId);
+		bool hasTag(const uint8_t _tagId) const;
 	};
 
 	constexpr EntitySignature NULL_ENTITY_SIGNATURE = EntitySignature{};

@@ -64,7 +64,7 @@ namespace tra::ecs
 		m_components[block] &= ~mask;
 	}
 
-	bool EntitySignature::hasComponent(const uint8_t _componentId)
+	bool EntitySignature::hasComponent(const uint8_t _componentId) const
 	{
 		const size_t block = _componentId >> 6;
 		const uint64_t mask = 1ull << (_componentId & 63);
@@ -88,7 +88,7 @@ namespace tra::ecs
 		m_tags[block] &= ~mask;
 	}
 
-	bool EntitySignature::hasTag(const uint8_t _tagId)
+	bool EntitySignature::hasTag(const uint8_t _tagId) const
 	{
 		const size_t block = _tagId >> 6;
 		const uint64_t mask = 1ull << (_tagId & 63);
