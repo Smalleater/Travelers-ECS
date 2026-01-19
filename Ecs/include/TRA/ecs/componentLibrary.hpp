@@ -23,9 +23,9 @@ namespace tra::ecs
 			info.m_id = id;
 			info.m_name = typeid(T).name();
 
-			if constexpr (!std::is_destructible_v<T>)
+			if constexpr (std::is_default_constructible_v<T>)
 			{
-				info.m_destroyFunc = [](void* _ptr) { static_cast<T*>(_ptr)->~T(); };
+				info.m_createFunc = [](void* _ptr) { new(_ptr) T(); };
 			}
 
 			if constexpr (!std::is_trivially_copyable_v<T>)
@@ -35,6 +35,11 @@ namespace tra::ecs
 						new(_dst) T(std::move(*static_cast<T*>(_src)));
 						static_cast<T*>(_src)->~T();
 					};
+			}
+
+			if constexpr (!std::is_destructible_v<T>)
+			{
+				info.m_destroyFunc = [](void* _ptr) { static_cast<T*>(_ptr)->~T(); };
 			}
 
 			m_components.push_back(info);

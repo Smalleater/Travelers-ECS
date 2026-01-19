@@ -17,6 +17,7 @@ namespace tra::ecs
 
 	void World::deleteEntity(Entity _entity)
 	{
+		m_archetypes[0].removeEntity(_entity);
 		m_entityManager.deleteEntity(_entity);
 	}
 }

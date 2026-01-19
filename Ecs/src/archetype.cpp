@@ -47,7 +47,14 @@ namespace tra::ecs
 			const ChunkColumn& column = m_layout.m_columns[i];
 			uint8_t* dst = chunk.m_data + column.m_offset + row * column.m_stride;
 
-			memset(dst, 0, column.m_stride);
+			if (auto createFunc = ComponentLibrary::get(column.m_componentId).m_createFunc)
+			{
+				createFunc(dst);
+			}
+			else
+			{
+				memset(dst, 0, column.m_stride);
+			}
 		}
 
 		_entity.m_archetype = this;
@@ -60,6 +67,62 @@ namespace tra::ecs
 		{
 			m_freeChunkIndices.pop_back();
 		}
+	}
+
+	std::optional<std::pair<EntityId, uint16_t>> Archetype::removeEntity(Entity& _entity)
+	{
+		uint16_t chunkindex = _entity.m_chunkIndex;
+		Chunk& chunk = m_chunks[chunkindex];
+
+		uint16_t deadRow = _entity.m_row;
+		uint16_t lastRow = chunk.m_count - 1;
+
+		EntityId movedEntityId = 0;
+
+		if (deadRow != lastRow)
+		{
+			for (size_t i = 0; i < m_layout.m_columns.size(); i++)
+			{
+				const ChunkColumn& column = m_layout.m_columns[i];
+
+				uint8_t* dst = chunk.m_data + column.m_offset + deadRow * column.m_stride;
+				uint8_t* src = chunk.m_data + column.m_offset + lastRow * column.m_stride;
+
+				if (i == 0)
+				{
+					movedEntityId = *reinterpret_cast<EntityId*>(src);
+					memcpy(dst, src, column.m_stride);
+				}
+				else if (auto moveFunc = ComponentLibrary::get(column.m_componentId).m_moveFunc)
+				{
+					moveFunc(dst, src);
+				}
+				else
+				{
+					memcpy(dst, src, column.m_stride);
+				}
+			}
+		}
+		else
+		{
+			for (size_t i = 1; i < m_layout.m_columns.size(); i++)
+			{
+				const ChunkColumn& column = m_layout.m_columns[i];
+
+				uint8_t* src = chunk.m_data + column.m_offset + deadRow * column.m_stride;
+
+				if (auto destroyFunc = ComponentLibrary::get(column.m_componentId).m_destroyFunc)
+				{
+					destroyFunc(src);
+				}
+			}
+		}
+
+		--chunk.m_count;
+
+		m_freeChunkIndices.push_back(chunkindex);
+
+		return deadRow != lastRow ? std::make_optional(std::make_pair(movedEntityId, deadRow)) : std::nullopt;
 	}
 
 	ChunkLayout Archetype::buildChunkLayout()

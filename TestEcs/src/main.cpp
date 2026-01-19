@@ -7,6 +7,8 @@
 
 using namespace tra;
 
+constexpr size_t ENTITY_COUNT = 10;
+
 TRA_REGISTER_COMPONENT(TestComponent,
 	int m_int = 2;
 	float m_float = 0.1f;
@@ -25,19 +27,32 @@ int main()
 {
 	ecs::World ecsWorld;
 
-	ecs::Entity entity = ecsWorld.createEntity();
-	std::cout << "Create entity\nid: " << entity.id() << "\nversion: " << entity.version() << std::endl;
-	std::cout << "Entity data\nArchetype: " << entity.m_archetype << "\nChunkIndex: " << entity.m_chunkIndex << "\nRow: " << entity.m_row << std::endl;
+	ecs::Entity entities[ENTITY_COUNT];
 
+	for (size_t i = 0; i < ENTITY_COUNT; i++)
+	{
+		ecs::Entity& entity = entities[i];
+		entity = ecsWorld.createEntity();
+
+		std::cout << "Create entity\nid: " << entity.id() << "\nversion: " << entity.version() << std::endl;
+		std::cout << "Entity data\nArchetype: " << entity.m_archetype << "\nChunkIndex: " << entity.m_chunkIndex << "\nRow: " << entity.m_row << std::endl;
+
+		std::cout << std::endl;
+	}
+
+	ecsWorld.deleteEntity(entities[3]);
+	std::cout << "Entity deleted with id: " << entities[3].id() << std::endl;
 	std::cout << std::endl;
-	ecsWorld.deleteEntity(entity);
-	std::cout << "Entity deleted" << std::endl;
-	std::cout << std::endl;
 
-	entity = ecsWorld.createEntity();
-	std::cout << "Create entity\nid: " << entity.id() << "\nversion: " << entity.version() << std::endl;
-	std::cout << "Entity data\nArchetype: " << entity.m_archetype << "\nChunkIndex: " << entity.m_chunkIndex << "\nRow: " << entity.m_row << std::endl;
+	entities[3] = ecsWorld.createEntity();
 
+	{
+		ecs::Entity& entity = entities[3];
+
+		std::cout << "Create entity\nid: " << entity.id() << "\nversion: " << entity.version() << std::endl;
+		std::cout << "Entity data\nArchetype: " << entity.m_archetype << "\nChunkIndex: " << entity.m_chunkIndex << "\nRow: " << entity.m_row << std::endl;
+	}
+	
 	std::cout << std::endl;
 
 	std::cout << "TestComponent Id: " << std::to_string(ecs::TestComponent::getId()) << std::endl;

@@ -1,6 +1,9 @@
 #ifndef TRA_ECS_ARCHETYPE_HPP
 #define TRA_ECS_ARCHETYPE_HPP
 
+#include <optional>
+#include <utility>
+
 #include "TRA/ecs/chunk.hpp"
 #include "TRA/ecs/entitySignature.hpp"
 #include "TRA/ecs/entity.hpp"
@@ -16,6 +19,7 @@ namespace tra::ecs
 		~Archetype() = default;
 
 		void addEntity(Entity& _entity);
+		std::optional<std::pair<EntityId, uint16_t>> removeEntity(Entity& _entity);
 
 	private:
 		EntitySignature m_entitySignature;
