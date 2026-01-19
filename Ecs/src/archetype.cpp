@@ -13,7 +13,7 @@ namespace tra::ecs
 	{
 		for (uint8_t i = 0; i < MAX_COMPONENTS; i++)
 		{
-			if (m_entitySignature.m_components.test(i))
+			if (m_entitySignature.hasComponent(i))
 			{
 				m_componentIds.push_back(i);
 			}
