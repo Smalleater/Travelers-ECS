@@ -3,6 +3,7 @@
 
 #include "TRA/ecs/chunk.hpp"
 #include "TRA/ecs/entitySignature.hpp"
+#include "TRA/ecs/entity.hpp"
 
 namespace tra::ecs
 {
@@ -14,6 +15,8 @@ namespace tra::ecs
 		Archetype(const EntitySignature& _signature);
 		~Archetype() = default;
 
+		void addEntity(Entity& _entity);
+
 	private:
 		EntitySignature m_entitySignature;
 
@@ -21,7 +24,7 @@ namespace tra::ecs
 		ChunkLayout m_layout;
 
 		std::vector<Chunk> m_chunks;
-		std::vector<uint16_t> freeChunkIndices;
+		std::vector<uint16_t> m_freeChunkIndices;
 
 		constexpr uint16_t alignUp(uint16_t _value, uint8_t _alignment)
 		{

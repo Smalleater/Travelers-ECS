@@ -4,13 +4,14 @@
 #include "TRA/errorCode.hpp"
 
 #include "TRA/ecs/entityManager.hpp"
+#include "TRA/ecs/archetype.hpp"
 
 namespace tra::ecs
 {
 	class World
 	{
 	public:
-		World() = default;
+		TRA_API World();
 		~World() = default;
 
 		TRA_API Entity createEntity();
@@ -18,6 +19,7 @@ namespace tra::ecs
 
 	private:
 		EntityManager m_entityManager;
+		std::vector<Archetype> m_archetypes;
 	};
 }
 

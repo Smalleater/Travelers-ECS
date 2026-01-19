@@ -27,6 +27,7 @@ int main()
 
 	ecs::Entity entity = ecsWorld.createEntity();
 	std::cout << "Create entity\nid: " << entity.id() << "\nversion: " << entity.version() << std::endl;
+	std::cout << "Entity data\nArchetype: " << entity.m_archetype << "\nChunkIndex: " << entity.m_chunkIndex << "\nRow: " << entity.m_row << std::endl;
 
 	std::cout << std::endl;
 	ecsWorld.deleteEntity(entity);
@@ -35,6 +36,7 @@ int main()
 
 	entity = ecsWorld.createEntity();
 	std::cout << "Create entity\nid: " << entity.id() << "\nversion: " << entity.version() << std::endl;
+	std::cout << "Entity data\nArchetype: " << entity.m_archetype << "\nChunkIndex: " << entity.m_chunkIndex << "\nRow: " << entity.m_row << std::endl;
 
 	std::cout << std::endl;
 

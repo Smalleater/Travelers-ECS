@@ -22,6 +22,46 @@ namespace tra::ecs
 		m_layout = buildChunkLayout();
 	}
 
+	void Archetype::addEntity(Entity& _entity)
+	{
+		if (m_freeChunkIndices.empty())
+		{
+			m_chunks.push_back(createChunk());
+			m_freeChunkIndices.push_back(static_cast<uint16_t>(m_chunks.size() - 1));
+		}
+
+		uint16_t chunkIndex = m_freeChunkIndices.back();
+		Chunk& chunk = m_chunks[chunkIndex];
+
+		uint16_t row = chunk.m_count;
+		assert(row < chunk.m_capacity);
+
+		const ChunkColumn& entityColumn = m_layout.m_columns[0];
+
+		uint32_t* entityIds = reinterpret_cast<uint32_t*>(chunk.m_data + entityColumn.m_offset);
+
+		entityIds[row] = _entity.id();
+
+		for (size_t i = 1; i < m_layout.m_columns.size(); i++)
+		{
+			const ChunkColumn& column = m_layout.m_columns[i];
+			uint8_t* dst = chunk.m_data + column.m_offset + row * column.m_stride;
+
+			memset(dst, 0, column.m_stride);
+		}
+
+		_entity.m_archetype = this;
+		_entity.m_chunkIndex = chunkIndex;
+		_entity.m_row = row;
+
+		++chunk.m_count;
+
+		if (chunk.m_count >= chunk.m_capacity)
+		{
+			m_freeChunkIndices.pop_back();
+		}
+	}
+
 	ChunkLayout Archetype::buildChunkLayout()
 	{
 		ChunkLayout layout{};
