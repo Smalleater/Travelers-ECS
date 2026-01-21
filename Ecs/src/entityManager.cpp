@@ -59,7 +59,7 @@ namespace tra::ecs
 		m_freeIds.push_back(_entity.id());
 	}
 
-	Entity& EntityManager::getEntityById(EntityId _id)
+	Entity& EntityManager::getEntityById(const EntityId _id)
 	{
 		return m_entities.at(_id);
 	}

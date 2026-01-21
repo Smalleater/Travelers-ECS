@@ -1,7 +1,10 @@
 #include "TRA/ecs/archetype.hpp"
 
+#include <iostream>
+
 #include <cassert>
 #include <malloc.h>
+#include <algorithm>
 
 #include "TRA/ecs/entity.hpp"
 #include "TRA/ecs/entityData.hpp"
@@ -21,6 +24,8 @@ namespace tra::ecs
 		}
 
 		m_layout = buildChunkLayout();
+
+		std::cout << "Layout capacity" << m_layout.m_capacity << std::endl;
 	}
 
 	void Archetype::addEntity(const Entity _entity, EntityData& _entityData)
@@ -130,51 +135,65 @@ namespace tra::ecs
 	{
 		ChunkLayout layout{};
 
-		uint16_t bytesPerEntity = ENTITY_INDEX_BITS;
-		uint8_t maxAlignement = alignof(uint32_t);
+		std::vector<const ComponentInfo*> componentsInfo;
+		componentsInfo.reserve(m_componentIds.size());
 
-		for (uint8_t id : m_componentIds)
+		for (auto id : m_componentIds)
 		{
-			const ComponentInfo& info = ComponentLibrary::get(id);
-			bytesPerEntity += info.m_size;
-			maxAlignement = std::max(maxAlignement, info.m_alignment);
+			componentsInfo.push_back(&ComponentLibrary::get(id));
 		}
 
-		bytesPerEntity = alignUp(bytesPerEntity, maxAlignement);
-
-		layout.m_capacity = MAX_CHUNK_SIZE / bytesPerEntity;
-		assert(layout.m_capacity > 0);
-
-		uint16_t offset = 0;
-
-		offset = alignUp(offset, alignof(uint32_t));
-		layout.m_columns.push_back({
-			255,
-			offset,
-			sizeof(uint32_t)
+		std::sort(componentsInfo.begin(), componentsInfo.end(),
+			[](const ComponentInfo* _a, const ComponentInfo* _b)
+			{
+				return _a->m_alignment > _b->m_alignment;
 			}
 		);
 
-		offset += static_cast<uint16_t>(layout.m_capacity * sizeof(uint32_t));
+		uint32_t capacity = MAX_CHUNK_SIZE / sizeof(uint32_t);
 
-		for (uint8_t id : m_componentIds)
+		while (capacity > 0)
 		{
-			const ComponentInfo& info = ComponentLibrary::get(id);
+			uint32_t offset = 0;
 
-			offset = alignUp(offset, info.m_alignment);
+			offset = alignUp(offset, alignof(uint32_t));
+			offset += capacity * sizeof(uint32_t);
 
-			layout.m_columns.push_back({
-				id,
-				offset,
-				info.m_size
-				}
-			);
+			for (auto* info : componentsInfo)
+			{
+				offset = alignUp(offset, info->m_alignment);
+				offset += capacity * info->m_size;
+			}
 
-			offset += layout.m_capacity * info.m_size;
+			if (offset <= MAX_CHUNK_SIZE)
+			{
+				break;
+			}
+
+			--capacity;
+		}
+
+		assert(capacity > 0 && "TRA ECS: Invalid archetype chunk capacity.");
+
+		layout.m_capacity = capacity;
+
+		uint32_t offset = 0;
+
+		offset = alignUp(offset, alignof(uint32_t));
+		layout.m_columns.push_back(ChunkColumn{ 255, static_cast<uint16_t>(offset), sizeof(uint32_t) });
+
+		offset += capacity * sizeof(uint32_t);
+
+		for (auto* info : componentsInfo)
+		{
+			offset = alignUp(offset, info->m_alignment);
+			layout.m_columns.push_back(ChunkColumn{ info->m_id,static_cast<uint16_t>(offset),info->m_size });
+			offset += capacity * info->m_size;
 		}
 
 		layout.m_chunkSize = offset;
-		assert(layout.m_chunkSize <= MAX_CHUNK_SIZE);
+
+		assert(layout.m_chunkSize <= MAX_CHUNK_SIZE && "TRA ECS: Chunk size exceeds MAX_CHUNK_SIZE");
 
 		return layout;
 	}

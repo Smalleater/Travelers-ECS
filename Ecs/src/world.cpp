@@ -20,7 +20,7 @@ namespace tra::ecs
 		return entity;
 	}
 
-	void World::deleteEntity(Entity& _entity)
+	void World::deleteEntity(const Entity _entity)
 	{
 		ArchetypeKey key(NULL_ENTITY_SIGNATURE.m_components);
 
@@ -28,7 +28,7 @@ namespace tra::ecs
 		m_entityManager.deleteEntity(_entity);
 	}
 
-	EntityData World::getEntityData(Entity _entity)
+	EntityData World::getEntityData(const Entity _entity)
 	{
 		return m_entityManager.getEntityData(_entity);
 	}

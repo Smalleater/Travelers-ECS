@@ -27,6 +27,16 @@ int main()
 {
 	ecs::World ecsWorld;
 
+	std::cout << "TestComponent\n";
+	std::cout << "sizeof: " << sizeof(ecs::TestComponent) << "\n";
+	std::cout << "align:  " << alignof(ecs::TestComponent) << "\n";
+
+	std::cout << "TestNonTrivialComponent\n";
+	std::cout << "sizeof: " << sizeof(ecs::TestNonTrivialComponent) << "\n";
+	std::cout << "align:  " << alignof(ecs::TestNonTrivialComponent) << "\n";
+
+	system("pause");
+
 	std::vector<ecs::Entity> entities;
 	entities.reserve(ENTITY_COUNT);
 
@@ -115,6 +125,18 @@ int main()
 
 		entityData = ecsWorld.getEntityData(entities[0]);
 		std::cout << "Entity data after add\nArchetype: " << entityData.m_archetype << "\nChunkIndex: " << entityData.m_chunkIndex << "\nRow: " << entityData.m_row << std::endl;
+	}
+
+	std::cout << std::endl;
+
+	{
+		ecs::EntityData entityData = ecsWorld.getEntityData(entities[5]);
+		std::cout << "Entity data before remove\nArchetype: " << entityData.m_archetype << "\nChunkIndex: " << entityData.m_chunkIndex << "\nRow: " << entityData.m_row << std::endl;
+
+		ecsWorld.removeComponent<ecs::TestComponent>(entities[5]);
+
+		entityData = ecsWorld.getEntityData(entities[5]);
+		std::cout << "Entity data after remove\nArchetype: " << entityData.m_archetype << "\nChunkIndex: " << entityData.m_chunkIndex << "\nRow: " << entityData.m_row << std::endl;
 	}
 
 	return 0;
