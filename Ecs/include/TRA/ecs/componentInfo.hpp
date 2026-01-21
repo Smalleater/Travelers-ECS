@@ -13,7 +13,6 @@ namespace tra::ecs
 
 		const char* m_name;
 		
-		void (*m_createFunc)(void*);
 		void (*m_moveFunc)(void*, void*);
 		void (*m_destroyFunc)(void*);
 	};

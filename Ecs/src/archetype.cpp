@@ -4,6 +4,7 @@
 #include <malloc.h>
 
 #include "TRA/ecs/entity.hpp"
+#include "TRA/ecs/entityData.hpp"
 #include "TRA/ecs/componentLibrary.hpp"
 
 namespace tra::ecs
@@ -22,7 +23,7 @@ namespace tra::ecs
 		m_layout = buildChunkLayout();
 	}
 
-	void Archetype::addEntity(Entity& _entity)
+	void Archetype::addEntity(const Entity _entity, EntityData& _entityData)
 	{
 		if (m_freeChunkIndices.empty())
 		{
@@ -47,19 +48,12 @@ namespace tra::ecs
 			const ChunkColumn& column = m_layout.m_columns[i];
 			uint8_t* dst = chunk.m_data + column.m_offset + row * column.m_stride;
 
-			if (auto createFunc = ComponentLibrary::get(column.m_componentId).m_createFunc)
-			{
-				createFunc(dst);
-			}
-			else
-			{
-				memset(dst, 0, column.m_stride);
-			}
+			memset(dst, 0, column.m_stride);
 		}
 
-		_entity.m_archetype = this;
-		_entity.m_chunkIndex = chunkIndex;
-		_entity.m_row = row;
+		_entityData.m_archetype = this;
+		_entityData.m_chunkIndex = chunkIndex;
+		_entityData.m_row = row;
 
 		++chunk.m_count;
 
@@ -69,12 +63,12 @@ namespace tra::ecs
 		}
 	}
 
-	std::optional<std::pair<EntityId, uint16_t>> Archetype::removeEntity(Entity& _entity)
+	std::optional<std::pair<EntityId, uint16_t>> Archetype::removeEntity(EntityData& _entityData)
 	{
-		uint16_t chunkindex = _entity.m_chunkIndex;
+		uint16_t chunkindex = _entityData.m_chunkIndex;
 		Chunk& chunk = m_chunks[chunkindex];
 
-		uint16_t deadRow = _entity.m_row;
+		uint16_t deadRow = _entityData.m_row;
 		uint16_t lastRow = chunk.m_count - 1;
 
 		EntityId movedEntityId = 0;
@@ -116,6 +110,13 @@ namespace tra::ecs
 					destroyFunc(src);
 				}
 			}
+		}
+
+		if (_entityData.m_archetype == this)
+		{
+			_entityData.m_archetype = nullptr;
+			_entityData.m_chunkIndex = UINT16_MAX;
+			_entityData.m_row = UINT16_MAX;
 		}
 
 		--chunk.m_count;

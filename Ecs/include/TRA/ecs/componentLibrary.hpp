@@ -4,6 +4,8 @@
 #include "TRA/export.hpp"
 
 #include <vector>
+#include <unordered_map>
+#include <typeindex>
 
 #include "TRA/ecs/componentInfo.hpp"
 
@@ -23,11 +25,6 @@ namespace tra::ecs
 			info.m_id = id;
 			info.m_name = typeid(T).name();
 
-			if constexpr (std::is_default_constructible_v<T>)
-			{
-				info.m_createFunc = [](void* _ptr) { new(_ptr) T(); };
-			}
-
 			if constexpr (!std::is_trivially_copyable_v<T>)
 			{
 				info.m_moveFunc = [](void* _dst, void* _src)
@@ -43,14 +40,22 @@ namespace tra::ecs
 			}
 
 			m_components.push_back(info);
+			m_componentLookUp[typeid(T)] = m_components.size() - 1;
 
 			return id;
+		}
+
+		template<typename T>
+		static const ComponentInfo& get()
+		{
+			return m_components.at(m_componentLookUp.at(typeid(T)));
 		}
 
 		TRA_API static const ComponentInfo& get(uint8_t _id);
 
 	private:
 		TRA_API static inline std::vector<ComponentInfo> m_components;
+		TRA_API static inline std::unordered_map<std::type_index, size_t> m_componentLookUp;
 	};
 }
 

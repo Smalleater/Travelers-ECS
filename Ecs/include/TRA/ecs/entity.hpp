@@ -16,14 +16,9 @@ namespace tra::ecs
 
 	constexpr uint32_t MAX_ENTITIES = (1u << ENTITY_INDEX_BITS) - 1u;
 
-	class Archetype;
-
 	struct Entity
 	{
 		uint32_t m_idAndVersion = 0;
-		Archetype* m_archetype = nullptr;
-		uint16_t m_chunkIndex = UINT16_MAX;
-		uint16_t m_row = UINT16_MAX;
 
 		constexpr EntityId id() const
 		{

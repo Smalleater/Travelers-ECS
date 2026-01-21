@@ -5,8 +5,9 @@
 #include <utility>
 
 #include "TRA/ecs/chunk.hpp"
-#include "TRA/ecs/entitySignature.hpp"
 #include "TRA/ecs/entity.hpp"
+#include "TRA/ecs/entityData.hpp"
+#include "TRA/ecs/entitySignature.hpp"
 #include "TRA/ecs/archetypeKey.hpp"
 
 namespace tra::ecs
@@ -16,11 +17,40 @@ namespace tra::ecs
 	class Archetype
 	{
 	public:
-		Archetype(const ArchetypeKey& _signature);
+		TRA_API Archetype(const ArchetypeKey& _signature);
 		~Archetype() = default;
 
-		void addEntity(Entity& _entity);
-		std::optional<std::pair<EntityId, uint16_t>> removeEntity(Entity& _entity);
+		TRA_API void addEntity(const Entity _entity, EntityData& _entityData);
+		TRA_API std::optional<std::pair<EntityId, uint16_t>> removeEntity(EntityData& _entityData);
+
+		template<typename T>
+		uint8_t* getComponentPtr(EntityData& _entityData)
+		{
+			if (_entityData.m_chunkIndex >= m_chunks.size())
+			{
+				throw std::runtime_error("TRA ECS: Invalid chunk for this entity.");
+			}
+
+			Chunk& chunk = m_chunks[_entityData.m_chunkIndex];
+			if (_entityData.m_row >= chunk.m_count)
+			{
+				throw std::runtime_error("TRA ECS: Invalid row for this entity.");
+			}
+
+			uint16_t row = _entityData.m_row;
+			uint8_t componentId = ComponentLibrary::get<T>().m_id;
+
+			auto it = std::find(m_componentIds.begin(), m_componentIds.end(), componentId);
+			if (it == m_componentIds.end())
+			{
+				throw std::runtime_error("TRA ECS: Component not found in this archetype.");
+			}
+
+			size_t columnIndex = std::distance(m_componentIds.begin(), it);
+			const ChunkColumn& column = m_layout.m_columns[columnIndex];
+
+			return chunk.m_data + column.m_offset + row * column.m_stride;
+		}
 
 	private:
 		const ArchetypeKey m_archetypeKey;

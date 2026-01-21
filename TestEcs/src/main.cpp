@@ -27,15 +27,18 @@ int main()
 {
 	ecs::World ecsWorld;
 
-	ecs::Entity entities[ENTITY_COUNT];
+	std::vector<ecs::Entity> entities;
+	entities.reserve(ENTITY_COUNT);
 
 	for (size_t i = 0; i < ENTITY_COUNT; i++)
 	{
-		ecs::Entity& entity = entities[i];
-		entity = ecsWorld.createEntity();
+		entities.push_back(ecsWorld.createEntity());
+
+		ecs::Entity entity = entities[i];
+		ecs::EntityData entityData = ecsWorld.getEntityData(entities[i]);
 
 		std::cout << "Create entity\nid: " << entity.id() << "\nversion: " << entity.version() << std::endl;
-		std::cout << "Entity data\nArchetype: " << entity.m_archetype << "\nChunkIndex: " << entity.m_chunkIndex << "\nRow: " << entity.m_row << std::endl;
+		std::cout << "Entity data\nArchetype: " << entityData.m_archetype << "\nChunkIndex: " << entityData.m_chunkIndex << "\nRow: " << entityData.m_row << std::endl;
 
 		std::cout << std::endl;
 	}
@@ -47,10 +50,11 @@ int main()
 	entities[3] = ecsWorld.createEntity();
 
 	{
-		ecs::Entity& entity = entities[3];
+		ecs::Entity entity = entities[3];
+		ecs::EntityData entityData = ecsWorld.getEntityData(entities[3]);
 
 		std::cout << "Create entity\nid: " << entity.id() << "\nversion: " << entity.version() << std::endl;
-		std::cout << "Entity data\nArchetype: " << entity.m_archetype << "\nChunkIndex: " << entity.m_chunkIndex << "\nRow: " << entity.m_row << std::endl;
+		std::cout << "Entity data\nArchetype: " << entityData.m_archetype << "\nChunkIndex: " << entityData.m_chunkIndex << "\nRow: " << entityData.m_row << std::endl;
 	}
 	
 	std::cout << std::endl;
@@ -76,6 +80,42 @@ int main()
 
 	std::cout << "TestNonTrivialComponent info value: - size: " << std::to_string(TestNonTrivialComponentInfo.m_size) << " alignement: "
 		<< std::to_string(TestNonTrivialComponentInfo.m_alignment) << " id: " << std::to_string(TestNonTrivialComponentInfo.m_id) << std::endl;
+	
+	std::cout << std::endl;
+
+	{
+		ecs::EntityData entityData = ecsWorld.getEntityData(entities[0]);
+		std::cout << "Entity data before add\nArchetype: " << entityData.m_archetype << "\nChunkIndex: " << entityData.m_chunkIndex << "\nRow: " << entityData.m_row << std::endl;
+
+		ecsWorld.addComponent<ecs::TestComponent>(entities[0], ecs::TestComponent{});
+
+		entityData = ecsWorld.getEntityData(entities[0]);
+		std::cout << "Entity data after add\nArchetype: " << entityData.m_archetype << "\nChunkIndex: " << entityData.m_chunkIndex << "\nRow: " << entityData.m_row << std::endl;
+	}
+
+	std::cout << std::endl;
+
+	{
+		ecs::EntityData entityData = ecsWorld.getEntityData(entities[5]);
+		std::cout << "Entity data before add\nArchetype: " << entityData.m_archetype << "\nChunkIndex: " << entityData.m_chunkIndex << "\nRow: " << entityData.m_row << std::endl;
+
+		ecsWorld.addComponent<ecs::TestComponent>(entities[5], ecs::TestComponent{});
+
+		entityData = ecsWorld.getEntityData(entities[5]);
+		std::cout << "Entity data after add\nArchetype: " << entityData.m_archetype << "\nChunkIndex: " << entityData.m_chunkIndex << "\nRow: " << entityData.m_row << std::endl;
+	}
+
+	std::cout << std::endl;
+
+	{
+		ecs::EntityData entityData = ecsWorld.getEntityData(entities[0]);
+		std::cout << "Entity data before add\nArchetype: " << entityData.m_archetype << "\nChunkIndex: " << entityData.m_chunkIndex << "\nRow: " << entityData.m_row << std::endl;
+
+		ecsWorld.addComponent<ecs::TestNonTrivialComponent>(entities[0], ecs::TestNonTrivialComponent(5, 6.3f, "World Hello"));
+
+		entityData = ecsWorld.getEntityData(entities[0]);
+		std::cout << "Entity data after add\nArchetype: " << entityData.m_archetype << "\nChunkIndex: " << entityData.m_chunkIndex << "\nRow: " << entityData.m_row << std::endl;
+	}
 
 	return 0;
 }

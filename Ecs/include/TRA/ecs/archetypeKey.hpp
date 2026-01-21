@@ -9,10 +9,10 @@ namespace tra::ecs
 	{
 		std::array<uint64_t, COMPONENT_BLOCK> m_components{};
 
-		ArchetypeKey(const std::array<uint64_t, COMPONENT_BLOCK>& _components);
+		TRA_API ArchetypeKey(const std::array<uint64_t, COMPONENT_BLOCK>& _components);
 		~ArchetypeKey() = default;
 
-		bool operator==(const ArchetypeKey& _other) const;
+		TRA_API bool operator==(const ArchetypeKey& _other) const;
 		bool operator!=(const ArchetypeKey& _other) const;
 
 		bool hasComponent(const uint8_t _componentId) const;

@@ -1,6 +1,8 @@
 #ifndef TRA_ECS_ENTITY_SIGNATURE_HPP
 #define TRA_ECS_ENTITY_SIGNATURE_HPP
 
+#include "TRA/export.hpp"
+
 #include <array>
 #include <cstdint>
 
@@ -23,10 +25,10 @@ namespace tra::ecs
 		static bool matchesComponents(const EntitySignature& _signature, const EntitySignature& _required, const EntitySignature& _excluded);
 		static bool matchesTags(const EntitySignature& _signature, const EntitySignature& _required, const EntitySignature& _excluded);
 
-		void addComponent(const uint8_t _componentId);
+		TRA_API void addComponent(const uint8_t _componentId);
 		void removeComponent(const uint8_t _componentId);
 
-		bool hasComponent(const uint8_t _componentId) const;
+		TRA_API bool hasComponent(const uint8_t _componentId) const;
 
 		void addTag(const uint8_t _tagId);
 		void removeTag(const uint8_t _tagId);

@@ -1,5 +1,7 @@
 #include "TRA/ecs/entityManager.hpp"
 
+#include <iostream>
+
 namespace tra::ecs
 {
 	EntityManager::EntityManager()
@@ -30,6 +32,7 @@ namespace tra::ecs
 			if (id >= m_entities.size())
 			{
 				m_entities.resize(id + 1, NULL_ENTITY);
+				m_entitiesData.resize(id + 1);
 				m_signatures.resize(id + 1, NULL_ENTITY_SIGNATURE);
 			}
 		}
@@ -41,15 +44,33 @@ namespace tra::ecs
 
 	void EntityManager::deleteEntity(Entity _entity)
 	{
-		if (_entity.id() == NULL_ENTITY.id()
-			|| _entity.id() >= m_entities.size())
+		EntityId entityId = _entity.id();
+
+		if (entityId == NULL_ENTITY.id()
+			|| entityId >= m_entities.size())
 		{
 			return;
 		}
 
-		m_entities[_entity.id()] = makeEntity(_entity.id(), _entity.version() + 1);
-		m_signatures[_entity.id()] = NULL_ENTITY_SIGNATURE;
+		m_entities[entityId] = makeEntity(entityId, _entity.version() + 1);
+		m_entitiesData[entityId] = EntityData();
+		m_signatures[entityId] = NULL_ENTITY_SIGNATURE;
 
 		m_freeIds.push_back(_entity.id());
+	}
+
+	Entity& EntityManager::getEntityById(EntityId _id)
+	{
+		return m_entities.at(_id);
+	}
+
+	EntityData& EntityManager::getEntityData(const Entity _entity)
+	{
+		return m_entitiesData.at(_entity.id());
+	}
+
+	EntitySignature& EntityManager::getSignature(const Entity _entity)
+	{
+		return m_signatures.at(_entity.id());
 	}
 }

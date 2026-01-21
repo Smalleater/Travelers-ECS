@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "TRA/ecs/entity.hpp"
+#include "TRA/ecs/entityData.hpp"
 #include "TRA/ecs/entitySignature.hpp"
 
 namespace tra::ecs
@@ -19,12 +20,17 @@ namespace tra::ecs
 		Entity createEntity();
 		void deleteEntity(Entity _entity);
 
+		TRA_API Entity& getEntityById(const EntityId _id);
+		TRA_API EntityData& getEntityData(const Entity _entity);
+		TRA_API EntitySignature& getSignature(const Entity _entity);
+
 	private:
 		EntityId m_nextFreeId;
 
-		std::vector<Entity> m_entities;
 		std::vector<EntityId> m_freeIds;
-		
+
+		std::vector<Entity> m_entities;
+		std::vector<EntityData> m_entitiesData;
 		std::vector<EntitySignature> m_signatures;
 	};
 }
