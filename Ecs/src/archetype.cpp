@@ -15,7 +15,7 @@ namespace tra::ecs
 	Archetype::Archetype(const ArchetypeKey& _signature)
 		: m_archetypeKey(_signature)
 	{
-		for (uint8_t i = 0; i < MAX_COMPONENTS; i++)
+		for (size_t i = 0; i < MAX_COMPONENTS; i++)
 		{
 			if (m_archetypeKey.hasComponent(i))
 			{
@@ -33,13 +33,13 @@ namespace tra::ecs
 		if (m_freeChunkIndices.empty())
 		{
 			m_chunks.push_back(createChunk());
-			m_freeChunkIndices.push_back(static_cast<uint16_t>(m_chunks.size() - 1));
+			m_freeChunkIndices.push_back(m_chunks.size() - 1);
 		}
 
-		uint16_t chunkIndex = m_freeChunkIndices.back();
+		size_t chunkIndex = m_freeChunkIndices.back();
 		Chunk& chunk = m_chunks[chunkIndex];
 
-		uint16_t row = chunk.m_count;
+		size_t row = chunk.m_count;
 		assert(row < chunk.m_capacity);
 
 		const ChunkColumn& entityColumn = m_layout.m_columns[0];
@@ -68,13 +68,13 @@ namespace tra::ecs
 		}
 	}
 
-	std::optional<std::pair<EntityId, uint16_t>> Archetype::removeEntity(EntityData& _entityData)
+	std::optional<std::pair<EntityId, size_t>> Archetype::removeEntity(EntityData& _entityData)
 	{
-		uint16_t chunkindex = _entityData.m_chunkIndex;
+		size_t chunkindex = _entityData.m_chunkIndex;
 		Chunk& chunk = m_chunks[chunkindex];
 
-		uint16_t deadRow = _entityData.m_row;
-		uint16_t lastRow = chunk.m_count - 1;
+		size_t deadRow = _entityData.m_row;
+		size_t lastRow = chunk.m_count - 1;
 
 		EntityId movedEntityId = 0;
 
@@ -150,11 +150,11 @@ namespace tra::ecs
 			}
 		);
 
-		uint32_t capacity = MAX_CHUNK_SIZE / sizeof(uint32_t);
+		size_t capacity = MAX_CHUNK_SIZE / sizeof(uint32_t);
 
 		while (capacity > 0)
 		{
-			uint32_t offset = 0;
+			size_t offset = 0;
 
 			offset = alignUp(offset, alignof(uint32_t));
 			offset += capacity * sizeof(uint32_t);
@@ -177,7 +177,7 @@ namespace tra::ecs
 
 		layout.m_capacity = capacity;
 
-		uint32_t offset = 0;
+		size_t offset = 0;
 
 		offset = alignUp(offset, alignof(uint32_t));
 		layout.m_columns.push_back(ChunkColumn{ 255, static_cast<uint16_t>(offset), sizeof(uint32_t) });

@@ -48,7 +48,7 @@ namespace tra::ecs
 		return true;
 	}
 
-	void EntitySignature::addComponent(const uint8_t _componentId)
+	void EntitySignature::addComponent(const size_t _componentId)
 	{
 		const size_t block = _componentId >> 6;
 		const uint64_t mask = 1ull << (_componentId & 63);
@@ -56,7 +56,7 @@ namespace tra::ecs
 		m_components[block] |= mask;
 	}
 
-	void EntitySignature::removeComponent(const uint8_t _componentId)
+	void EntitySignature::removeComponent(const size_t _componentId)
 	{
 		const size_t block = _componentId >> 6;
 		const uint64_t mask = 1ull << (_componentId & 63);
@@ -64,7 +64,7 @@ namespace tra::ecs
 		m_components[block] &= ~mask;
 	}
 
-	bool EntitySignature::hasComponent(const uint8_t _componentId) const
+	bool EntitySignature::hasComponent(const size_t _componentId) const
 	{
 		const size_t block = _componentId >> 6;
 		const uint64_t mask = 1ull << (_componentId & 63);
@@ -72,7 +72,7 @@ namespace tra::ecs
 		return (m_components[block] & mask) != 0;
 	}
 
-	void EntitySignature::addTag(const uint8_t _tagId)
+	void EntitySignature::addTag(const size_t _tagId)
 	{
 		const size_t block = _tagId >> 6;
 		const uint64_t mask = 1ull << (_tagId & 63);
@@ -80,7 +80,7 @@ namespace tra::ecs
 		m_tags[block] |= mask;
 	}
 
-	void EntitySignature::removeTag(const uint8_t _tagId)
+	void EntitySignature::removeTag(const size_t _tagId)
 	{
 		const size_t block = _tagId >> 6;
 		const uint64_t mask = 1ull << (_tagId & 63);
@@ -88,7 +88,7 @@ namespace tra::ecs
 		m_tags[block] &= ~mask;
 	}
 
-	bool EntitySignature::hasTag(const uint8_t _tagId) const
+	bool EntitySignature::hasTag(const size_t _tagId) const
 	{
 		const size_t block = _tagId >> 6;
 		const uint64_t mask = 1ull << (_tagId & 63);

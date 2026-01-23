@@ -21,7 +21,7 @@ namespace tra::ecs
 		~Archetype() = default;
 
 		TRA_API void addEntity(const Entity _entity, EntityData& _entityData);
-		TRA_API std::optional<std::pair<EntityId, uint16_t>> removeEntity(EntityData& _entityData);
+		TRA_API std::optional<std::pair<EntityId, size_t>> removeEntity(EntityData& _entityData);
 
 		template<typename T>
 		uint8_t* getComponentPtr(EntityData& _entityData)
@@ -37,8 +37,8 @@ namespace tra::ecs
 				throw std::runtime_error("TRA ECS: Invalid row for this entity.");
 			}
 
-			uint16_t row = _entityData.m_row;
-			uint8_t componentId = ComponentLibrary::get<T>().m_id;
+			size_t row = _entityData.m_row;
+			size_t componentId = ComponentLibrary::get<T>().m_id;
 
 			auto it = std::find(m_componentIds.begin(), m_componentIds.end(), componentId);
 			if (it == m_componentIds.end())
@@ -55,15 +55,15 @@ namespace tra::ecs
 	private:
 		const ArchetypeKey m_archetypeKey;
 
-		std::vector<uint8_t> m_componentIds;
+		std::vector<size_t> m_componentIds;
 		ChunkLayout m_layout;
 
 		std::vector<Chunk> m_chunks;
-		std::vector<uint16_t> m_freeChunkIndices;
+		std::vector<size_t> m_freeChunkIndices;
 
-		constexpr uint16_t alignUp(uint16_t _value, uint8_t _alignment)
+		constexpr size_t alignUp(size_t _value, size_t _alignment)
 		{
-			return (_value + _alignment - 2) & ~(_alignment - 1);
+			return (_value + _alignment - 1) & ~(_alignment - 1);
 		}
 
 		ChunkLayout buildChunkLayout();

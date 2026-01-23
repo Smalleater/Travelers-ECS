@@ -13,7 +13,7 @@ namespace tra::ecs
 			m_id = ComponentLibrary::registerComponent<T>();
 		}
 
-		uint8_t m_id;
+		size_t m_id;
 	};
 }
 

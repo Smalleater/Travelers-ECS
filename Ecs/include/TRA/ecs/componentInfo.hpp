@@ -7,9 +7,9 @@ namespace tra::ecs
 {
 	struct ComponentInfo
 	{
-		uint16_t m_size;
-		uint8_t m_alignment;
-		uint8_t m_id;
+		size_t m_size;
+		size_t m_alignment;
+		size_t m_id;
 
 		const char* m_name;
 		

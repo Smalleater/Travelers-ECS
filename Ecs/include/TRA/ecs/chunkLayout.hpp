@@ -10,8 +10,8 @@ namespace tra::ecs
 {
 	struct ChunkLayout
 	{
-		uint16_t m_chunkSize;
-		uint32_t m_capacity;
+		size_t m_chunkSize;
+		size_t m_capacity;
 
 		std::vector<ChunkColumn> m_columns;
 	};

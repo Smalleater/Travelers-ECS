@@ -10,8 +10,8 @@ namespace tra::ecs
 	struct EntityData
 	{
 		Archetype* m_archetype = nullptr;
-		uint16_t m_chunkIndex = UINT16_MAX;
-		uint16_t m_row = UINT16_MAX;
+		size_t m_chunkIndex = SIZE_MAX;
+		size_t m_row = SIZE_MAX;
 	};
 }
 

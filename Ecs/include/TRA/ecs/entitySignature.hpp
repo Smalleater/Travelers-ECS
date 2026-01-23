@@ -25,15 +25,15 @@ namespace tra::ecs
 		static bool matchesComponents(const EntitySignature& _signature, const EntitySignature& _required, const EntitySignature& _excluded);
 		static bool matchesTags(const EntitySignature& _signature, const EntitySignature& _required, const EntitySignature& _excluded);
 
-		TRA_API void addComponent(const uint8_t _componentId);
-		TRA_API void removeComponent(const uint8_t _componentId);
+		TRA_API void addComponent(const size_t _componentId);
+		TRA_API void removeComponent(const size_t _componentId);
 
-		TRA_API bool hasComponent(const uint8_t _componentId) const;
+		TRA_API bool hasComponent(const size_t _componentId) const;
 
-		void addTag(const uint8_t _tagId);
-		void removeTag(const uint8_t _tagId);
+		void addTag(const size_t _tagId);
+		void removeTag(const size_t _tagId);
 
-		bool hasTag(const uint8_t _tagId) const;
+		bool hasTag(const size_t _tagId) const;
 	};
 
 	constexpr EntitySignature NULL_ENTITY_SIGNATURE = EntitySignature{};

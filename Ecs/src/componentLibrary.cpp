@@ -2,7 +2,7 @@
 
 namespace tra::ecs
 {
-	const ComponentInfo& ComponentLibrary::get(uint8_t _id)
+	const ComponentInfo& ComponentLibrary::get(size_t _id)
 	{
 		return m_components[_id];
 	}

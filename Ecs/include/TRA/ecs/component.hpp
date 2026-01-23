@@ -9,7 +9,7 @@ namespace tra::ecs \
 	struct NAME \
 	{ \
 		__VA_ARGS__ \
-		static uint8_t getId() \
+		static size_t getId() \
 		{ \
 			return m_componentId.m_id; \
 		} \

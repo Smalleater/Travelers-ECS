@@ -15,7 +15,7 @@ namespace tra::ecs
 		TRA_API bool operator==(const ArchetypeKey& _other) const;
 		bool operator!=(const ArchetypeKey& _other) const;
 
-		bool hasComponent(const uint8_t _componentId) const;
+		bool hasComponent(const size_t _componentId) const;
 	};
 }
 

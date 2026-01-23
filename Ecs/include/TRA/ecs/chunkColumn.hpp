@@ -7,9 +7,9 @@ namespace tra::ecs
 {
 	struct ChunkColumn
 	{
-		uint8_t m_componentId;
-		uint16_t m_offset;
-		uint16_t m_stride;
+		size_t m_componentId;
+		size_t m_offset;
+		size_t m_stride;
 	};
 }
 

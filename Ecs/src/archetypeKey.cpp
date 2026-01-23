@@ -18,7 +18,7 @@ namespace tra::ecs
 		return !(*this == _other);
 	}
 
-	bool ArchetypeKey::hasComponent(const uint8_t _componentId) const
+	bool ArchetypeKey::hasComponent(const size_t _componentId) const
 	{
 		const size_t block = _componentId >> 6;
 		const uint64_t mask = 1ull << (_componentId & 63);
