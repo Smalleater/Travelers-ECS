@@ -7,12 +7,11 @@
 
 using namespace tra;
 
-constexpr size_t ENTITY_COUNT = 10;
+constexpr size_t ENTITY_COUNT = 100000;
 
 TRA_REGISTER_COMPONENT(TestComponent,
 	int m_int = 2;
 	float m_float = 0.1f;
-	std::string m_string = "Hello World";
 )
 
 TRA_REGISTER_COMPONENT(TestNonTrivialComponent,
@@ -36,6 +35,8 @@ int main()
 	std::cout << "align:  " << alignof(ecs::TestNonTrivialComponent) << "\n";
 
 	system("pause");
+
+	std::cout << std::endl;
 
 	std::vector<ecs::Entity> entities;
 	entities.reserve(ENTITY_COUNT);
@@ -66,8 +67,49 @@ int main()
 		std::cout << "Create entity\nid: " << entity.id() << "\nversion: " << entity.version() << std::endl;
 		std::cout << "Entity data\nArchetype: " << entityData.m_archetype << "\nChunkIndex: " << entityData.m_chunkIndex << "\nRow: " << entityData.m_row << std::endl;
 	}
-	
+
+	{
+		ecs::Entity entity = entities[0];
+		ecs::EntityData entityData = ecsWorld.getEntityData(entities[0]);
+
+		std::cout << "Create entity\nid: " << entity.id() << "\nversion: " << entity.version() << std::endl;
+		std::cout << "Entity data\nArchetype: " << entityData.m_archetype << "\nChunkIndex: " << entityData.m_chunkIndex << "\nRow: " << entityData.m_row << std::endl;
+
+	}
+
 	std::cout << std::endl;
+
+	{
+		ecs::EntityData entityData = ecsWorld.getEntityData(entities[0]);
+		std::cout << "Entity data before add\nArchetype: " << entityData.m_archetype << "\nChunkIndex: " << entityData.m_chunkIndex << "\nRow: " << entityData.m_row << std::endl;
+
+		ecsWorld.addComponent<ecs::TestNonTrivialComponent>(entities[0], ecs::TestNonTrivialComponent(5, 6.3f, "World Hello"));
+
+		entityData = ecsWorld.getEntityData(entities[0]);
+		std::cout << "Entity data after add\nArchetype: " << entityData.m_archetype << "\nChunkIndex: " << entityData.m_chunkIndex << "\nRow: " << entityData.m_row << std::endl;
+	}
+
+	std::cout << std::endl;
+
+	{
+		ecs::TestNonTrivialComponent& component = ecsWorld.getComponent<ecs::TestNonTrivialComponent>(entities[0]);
+
+		std::cout << "Component value: m_int= " << component.m_int << " | m_float= " << component.m_float << " | m_string= " << component.m_string << std::endl;
+
+		component.m_int = 2026;
+		component.m_float = 2.30f;
+		component.m_string = "Good ECS";
+
+	}
+
+	std::cout << std::endl;
+
+	{
+		ecs::TestNonTrivialComponent& component = ecsWorld.getComponent<ecs::TestNonTrivialComponent>(entities[0]);
+		std::cout << "Component value: m_int= " << component.m_int << " | m_float= " << component.m_float << " | m_string= " << component.m_string << std::endl;
+	}
+	
+	/*std::cout << std::endl;
 
 	std::cout << "TestComponent Id: " << std::to_string(ecs::TestComponent::getId()) << std::endl;
 	std::cout << "TestNonTrivialComponent Id: " << std::to_string(ecs::TestNonTrivialComponent::getId()) << std::endl;
@@ -137,7 +179,7 @@ int main()
 
 		entityData = ecsWorld.getEntityData(entities[5]);
 		std::cout << "Entity data after remove\nArchetype: " << entityData.m_archetype << "\nChunkIndex: " << entityData.m_chunkIndex << "\nRow: " << entityData.m_row << std::endl;
-	}
+	}*/
 
 	return 0;
 }

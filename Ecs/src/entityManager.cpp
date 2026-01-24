@@ -24,7 +24,7 @@ namespace tra::ecs
 		{
 			if (m_nextFreeId >= MAX_ENTITIES)
 			{
-				throw("TRA_ECS: Max entities reached");
+				throw std::runtime_error("TRA ECS: Max entities reached.");
 			}
 
 			id = m_nextFreeId++;

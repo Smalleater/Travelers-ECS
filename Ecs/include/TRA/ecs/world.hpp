@@ -101,6 +101,20 @@ namespace tra::ecs
 			}
 		}
 
+		template<typename T>
+		T& getComponent(const Entity _entity)
+		{
+			EntitySignature& signature = m_entityManager.getSignature(_entity);
+
+			if (!signature.hasComponent(ComponentLibrary::get<T>().m_id))
+			{
+				throw std::runtime_error("TRA ECS: Tried to access a component the entity does not have.");
+			}
+
+			EntityData& entityData = m_entityManager.getEntityData(_entity);
+			return entityData.m_archetype->getComponent<T>(entityData);
+		}
+
 	private:
 		EntityManager m_entityManager;
 		std::vector<std::unique_ptr<Archetype>> m_archetypes;

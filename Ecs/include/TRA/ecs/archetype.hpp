@@ -24,6 +24,12 @@ namespace tra::ecs
 		TRA_API std::optional<std::pair<EntityId, size_t>> removeEntity(EntityData& _entityData);
 
 		template<typename T>
+		T& getComponent(EntityData& _entityData)
+		{
+			return *reinterpret_cast<T*>(getComponentPtr<T>(_entityData));
+		}
+
+		template<typename T>
 		uint8_t* getComponentPtr(EntityData& _entityData)
 		{
 			if (_entityData.m_chunkIndex >= m_chunks.size())
