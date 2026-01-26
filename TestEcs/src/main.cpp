@@ -8,7 +8,7 @@
 
 using namespace tra;
 
-constexpr size_t ENTITY_COUNT = ecs::MAX_ENTITIES - 1;
+constexpr size_t ENTITY_COUNT = 100000;
 
 TRA_REGISTER_COMPONENT(TestComponent,
 	int m_int = 2;
@@ -39,8 +39,8 @@ int main()
 
 	std::cout << std::endl;
 
-	//std::vector<ecs::Entity> entities;
-	//entities.reserve(ENTITY_COUNT);
+	std::vector<ecs::Entity> entities;
+	entities.resize(ENTITY_COUNT, ecs::NULL_ENTITY);
 
 	std::chrono::high_resolution_clock mainClock;
 	std::chrono::time_point start = mainClock.now();
@@ -49,9 +49,9 @@ int main()
 	{
 		//entities.push_back(ecsWorld.createEntity());
 
-		ecs::Entity entity = ecsWorld.createEntity();
-		ecsWorld.addComponent<ecs::TestComponent>(entity, ecs::TestComponent{});
-		ecsWorld.addComponent<ecs::TestNonTrivialComponent>(entity, ecs::TestNonTrivialComponent(5, 6.3f, "World Hello"));
+		entities[i] = ecsWorld.createEntity();
+		ecsWorld.addComponent<ecs::TestComponent>(entities[i], ecs::TestComponent{});
+		ecsWorld.addComponent<ecs::TestNonTrivialComponent>(entities[i], ecs::TestNonTrivialComponent(5, 6.3f, "World Hello"));
 
 		/*ecs::Entity entity = entities[i];
 		ecs::EntityData entityData = ecsWorld.getEntityData(entities[i]);
@@ -60,6 +60,13 @@ int main()
 		std::cout << "Entity data\nArchetype: " << entityData.m_archetype << "\nChunkIndex: " << entityData.m_chunkIndex << "\nRow: " << entityData.m_row << std::endl;
 
 		std::cout << std::endl;*/
+	}
+
+	std::cout << "Start remove component" << std::endl;
+
+	for (size_t i = 0; i < ENTITY_COUNT; i++)
+	{
+		ecsWorld.removeComponent<ecs::TestComponent>(entities[i]);
 	}
 
 	std::chrono::time_point end = mainClock.now();

@@ -24,8 +24,6 @@ namespace tra::ecs
 		}
 
 		m_layout = buildChunkLayout();
-
-		std::cout << "Layout capacity" << m_layout.m_capacity << std::endl;
 	}
 
 	void Archetype::addEntity(const Entity _entity, EntityData& _entityData)
@@ -45,7 +43,6 @@ namespace tra::ecs
 		const ChunkColumn& entityColumn = m_layout.m_columns[0];
 
 		uint32_t* entityIds = reinterpret_cast<uint32_t*>(chunk.m_data + entityColumn.m_offset);
-
 		entityIds[row] = _entity.id();
 
 		for (size_t i = 1; i < m_layout.m_columns.size(); i++)
@@ -78,6 +75,9 @@ namespace tra::ecs
 
 		EntityId movedEntityId = 0;
 
+		const ChunkColumn& entityColumn = m_layout.m_columns[0];
+		uint32_t* entityIds = reinterpret_cast<uint32_t*>(chunk.m_data + entityColumn.m_offset);
+
 		if (deadRow != lastRow)
 		{
 			for (size_t i = 0; i < m_layout.m_columns.size(); i++)
@@ -89,31 +89,28 @@ namespace tra::ecs
 
 				if (i == 0)
 				{
-					movedEntityId = *reinterpret_cast<EntityId*>(src);
-					memcpy(dst, src, column.m_stride);
-				}
-				else if (auto moveFunc = ComponentLibrary::get(column.m_componentId).m_moveFunc)
-				{
-					moveFunc(dst, src);
+					movedEntityId = entityIds[lastRow];
+					memcpy(dst, src, sizeof(uint32_t));
 				}
 				else
 				{
-					memcpy(dst, src, column.m_stride);
+					ComponentLibrary::get(column.m_componentId).m_moveFunc(dst, src);
 				}
 			}
 		}
-		else
+
+		entityIds[lastRow] = 0;
+
+		size_t rowToDestroy = (deadRow != lastRow) ? lastRow : deadRow;
+		for (size_t i = 1; i < m_layout.m_columns.size(); i++)
 		{
-			for (size_t i = 1; i < m_layout.m_columns.size(); i++)
+			const ChunkColumn& column = m_layout.m_columns[i];
+
+			uint8_t* src = chunk.m_data + column.m_offset + rowToDestroy * column.m_stride;
+
+			if (auto destroyFunc = ComponentLibrary::get(column.m_componentId).m_destroyFunc)
 			{
-				const ChunkColumn& column = m_layout.m_columns[i];
-
-				uint8_t* src = chunk.m_data + column.m_offset + deadRow * column.m_stride;
-
-				if (auto destroyFunc = ComponentLibrary::get(column.m_componentId).m_destroyFunc)
-				{
-					destroyFunc(src);
-				}
+				destroyFunc(src);
 			}
 		}
 
@@ -126,7 +123,17 @@ namespace tra::ecs
 
 		--chunk.m_count;
 
-		m_freeChunkIndices.push_back(chunkindex);
+		if (!std::binary_search(m_freeChunkIndices.begin(), m_freeChunkIndices.end(), chunkindex))
+		{
+			m_freeChunkIndices.push_back(chunkindex);
+
+			std::sort(m_freeChunkIndices.begin(), m_freeChunkIndices.end(),
+				[](const size_t _a, const size_t _b)
+				{
+					return _a > _b;
+				}
+			);
+		}
 
 		return deadRow != lastRow ? std::make_optional(std::make_pair(movedEntityId, deadRow)) : std::nullopt;
 	}
@@ -152,7 +159,7 @@ namespace tra::ecs
 			throw std::runtime_error("TRA ECS: Component not found in this archetype.");
 		}
 
-		size_t columnIndex = std::distance(m_componentIds.begin(), it);
+		size_t columnIndex = std::distance(m_componentIds.begin(), it) + 1;
 		const ChunkColumn& column = m_layout.m_columns[columnIndex];
 
 		return chunk.m_data + column.m_offset + row * column.m_stride;
@@ -207,15 +214,15 @@ namespace tra::ecs
 		size_t offset = 0;
 
 		offset = alignUp(offset, alignof(uint32_t));
-		layout.m_columns.push_back(ChunkColumn{ 255, static_cast<uint16_t>(offset), sizeof(uint32_t) });
-
+		layout.m_columns.push_back(ChunkColumn{ SIZE_MAX, static_cast<uint16_t>(offset), sizeof(uint32_t) });
 		offset += capacity * sizeof(uint32_t);
 
-		for (auto* info : componentsInfo)
+		for (auto id : m_componentIds)
 		{
-			offset = alignUp(offset, info->m_alignment);
-			layout.m_columns.push_back(ChunkColumn{ info->m_id,static_cast<uint16_t>(offset),info->m_size });
-			offset += capacity * info->m_size;
+			const ComponentInfo& info = ComponentLibrary::get(id);
+			offset = alignUp(offset, info.m_alignment);
+			layout.m_columns.push_back(ChunkColumn{ info.m_id, static_cast<uint16_t>(offset), info.m_size });
+			offset += capacity * info.m_size;
 		}
 
 		layout.m_chunkSize = offset;
