@@ -25,22 +25,24 @@ namespace tra::ecs
 			info.m_id = id;
 			info.m_name = typeid(T).name();
 
-			if constexpr (!std::is_trivially_copyable_v<T>)
-			{
-				info.m_moveFunc = [](void* _dst, void* _src)
-					{
-						new(_dst) T(std::move(*static_cast<T*>(_src)));
-						static_cast<T*>(_src)->~T();
-					};
-			}
+
+			info.m_moveFunc = [](void* _dst, void* _src)
+				{
+					new(_dst) T(std::move(*static_cast<T*>(_src)));
+					static_cast<T*>(_src)->~T();
+				};
 
 			if constexpr (!std::is_destructible_v<T>)
 			{
 				info.m_destroyFunc = [](void* _ptr) { static_cast<T*>(_ptr)->~T(); };
 			}
+			else
+			{
+				info.m_destroyFunc = nullptr;
+			}
 
 			m_components.push_back(info);
-			m_componentLookUp[typeid(T)] = m_components.size() - 1;
+			m_componentLookUp.insert({ typeid(T), m_components.size() - 1 });
 
 			return id;
 		}
@@ -52,6 +54,7 @@ namespace tra::ecs
 		}
 
 		TRA_API static const ComponentInfo& get(size_t _id);
+		TRA_API static const size_t getComponentCount();
 
 	private:
 		TRA_API static inline std::vector<ComponentInfo> m_components;

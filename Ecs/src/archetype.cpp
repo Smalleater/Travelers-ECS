@@ -131,6 +131,33 @@ namespace tra::ecs
 		return deadRow != lastRow ? std::make_optional(std::make_pair(movedEntityId, deadRow)) : std::nullopt;
 	}
 
+	uint8_t* Archetype::getComponentPtr(const EntityData& _entityData, const size_t _componentid)
+	{
+		if (_entityData.m_chunkIndex >= m_chunks.size())
+		{
+			throw std::runtime_error("TRA ECS: Invalid chunk for this entity.");
+		}
+
+		Chunk& chunk = m_chunks[_entityData.m_chunkIndex];
+		if (_entityData.m_row >= chunk.m_count)
+		{
+			throw std::runtime_error("TRA ECS: Invalid row for this entity.");
+		}
+
+		size_t row = _entityData.m_row;
+
+		auto it = std::find(m_componentIds.begin(), m_componentIds.end(), _componentid);
+		if (it == m_componentIds.end())
+		{
+			throw std::runtime_error("TRA ECS: Component not found in this archetype.");
+		}
+
+		size_t columnIndex = std::distance(m_componentIds.begin(), it);
+		const ChunkColumn& column = m_layout.m_columns[columnIndex];
+
+		return chunk.m_data + column.m_offset + row * column.m_stride;
+	}
+
 	ChunkLayout Archetype::buildChunkLayout()
 	{
 		ChunkLayout layout{};

@@ -28,6 +28,7 @@ namespace tra::ecs
 		{
 			const ComponentInfo& componentInfo = ComponentLibrary::get<T>();
 			EntitySignature& entitySignature = m_entityManager.getSignature(_entity);
+			EntitySignature oldSignature = entitySignature;
 
 			if (entitySignature.hasComponent(componentInfo.m_id))
 			{
@@ -38,6 +39,7 @@ namespace tra::ecs
 			entitySignature.addComponent(componentInfo.m_id);
 
 			EntityData& entityData = m_entityManager.getEntityData(_entity);
+			EntityData oldEntityData = entityData;
 			Archetype* oldArchetype = entityData.m_archetype;
 
 			ArchetypeKey key(entitySignature.m_components);
@@ -49,12 +51,27 @@ namespace tra::ecs
 			}
 
 			m_archetypes.at(m_archetypeLookUp[key])->addEntity(_entity, entityData);
-			uint8_t* dst = entityData.m_archetype->getComponentPtr<T>(entityData);
+			uint8_t* dst = entityData.m_archetype->getComponentPtr(entityData, componentInfo.m_id);
 			new(dst) T(_component);
 
-			if (oldArchetype)
+			for (size_t i = 0; i < ComponentLibrary::getComponentCount(); i++)
 			{
-				auto result = oldArchetype->removeEntity(entityData);
+				if (!oldSignature.hasComponent(i))
+				{
+					continue;
+				}
+
+				const ComponentInfo& moveCompInfo = ComponentLibrary::get(i);
+
+				uint8_t* src = oldArchetype->getComponentPtr(oldEntityData, i);
+				uint8_t* dst = m_archetypes.at(m_archetypeLookUp[key])->getComponentPtr(entityData, i);
+
+				moveCompInfo.m_moveFunc(dst, src);
+			}
+
+			if (oldArchetype) 
+			{
+				auto result = oldArchetype->removeEntity(oldEntityData);
 				if (result)
 				{
 					EntityData& entityMovedData = m_entityManager.getEntityData(m_entityManager.getEntityById(result.value().first));
