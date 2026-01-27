@@ -15,21 +15,41 @@ namespace tra::ecs
 		Entity entity = m_entityManager.createEntity();
 		ArchetypeKey key(NULL_ENTITY_SIGNATURE.m_components);
 
-		m_archetypes[m_archetypeLookUp[key]]->addEntity(entity, m_entityManager.getEntityData(entity));
+		m_archetypes.at(m_archetypeLookUp.at(key))->addEntity(entity, m_entityManager.getEntityData(entity));
 
 		return entity;
 	}
 
 	void World::deleteEntity(const Entity _entity)
 	{
-		ArchetypeKey key(NULL_ENTITY_SIGNATURE.m_components);
-
-		m_archetypes[m_archetypeLookUp[key]]->removeEntity(m_entityManager.getEntityData(_entity));
+		EntityData& entityData = m_entityManager.getEntityData(_entity);
+		if (entityData.m_archetype)
+		{
+			removeEntityFromArchetype(entityData.m_archetype, entityData);
+		}
+		
 		m_entityManager.deleteEntity(_entity);
 	}
 
-	EntityData World::getEntityData(const Entity _entity)
+	Archetype* World::getOrCreateArchetype(const ArchetypeKey _key)
 	{
-		return m_entityManager.getEntityData(_entity);
+		if (m_archetypeLookUp.find(_key) == m_archetypeLookUp.end())
+		{
+			std::unique_ptr<Archetype> newArchetype = std::make_unique<Archetype>(_key);
+			m_archetypes.push_back(std::move(newArchetype));
+			m_archetypeLookUp.insert({ _key, m_archetypes.size() - 1 });
+		}
+
+		return m_archetypes.at(m_archetypeLookUp.at(_key)).get();
+	}
+
+	void World::removeEntityFromArchetype(Archetype* _archetype, EntityData& _entityData)
+	{
+		auto result = _archetype->removeEntity(_entityData);
+		if (result)
+		{
+			EntityData& entityMovedData = m_entityManager.getEntityData(m_entityManager.getEntityById(result.value().first));
+			entityMovedData.m_row = result.value().second;
+		}
 	}
 }

@@ -21,8 +21,6 @@ namespace tra::ecs
 		TRA_API Entity createEntity();
 		TRA_API void deleteEntity(const Entity _entity);
 
-		TRA_API EntityData getEntityData(const Entity _entity);
-
 		template<typename T>
 		void addComponent(const Entity _entity, const T& _component)
 		{
@@ -43,15 +41,10 @@ namespace tra::ecs
 			Archetype* oldArchetype = entityData.m_archetype;
 
 			ArchetypeKey key(entitySignature.m_components);
-			if (m_archetypeLookUp.find(key) == m_archetypeLookUp.end())
-			{
-				std::unique_ptr<Archetype> newArchetype = std::make_unique<Archetype>(key);
-				m_archetypes.push_back(std::move(newArchetype));
-				m_archetypeLookUp[key] = m_archetypes.size() - 1;
-			}
+			Archetype* archetype = getOrCreateArchetype(key);
 
-			m_archetypes.at(m_archetypeLookUp[key])->addEntity(_entity, entityData);
-			uint8_t* dst = entityData.m_archetype->getComponentPtr(entityData, componentInfo.m_id);
+			archetype->addEntity(_entity, entityData);
+			uint8_t* dst = archetype->getComponentPtr(entityData, componentInfo.m_id);
 			new(dst) T(_component);
 
 			for (size_t i = 0; i < ComponentLibrary::getComponentCount(); i++)
@@ -69,14 +62,9 @@ namespace tra::ecs
 				moveCompInfo.m_moveFunc(dst, src);
 			}
 
-			if (oldArchetype) 
+			if (oldArchetype)
 			{
-				auto result = oldArchetype->removeEntity(oldEntityData);
-				if (result)
-				{
-					EntityData& entityMovedData = m_entityManager.getEntityData(m_entityManager.getEntityById(result.value().first));
-					entityMovedData.m_row = result.value().second;
-				}
+				removeEntityFromArchetype(oldArchetype, oldEntityData);
 			}
 		}
 
@@ -99,14 +87,8 @@ namespace tra::ecs
 			Archetype* oldArchetype = entityData.m_archetype;
 
 			ArchetypeKey key(entitySignature.m_components);
-			if (m_archetypeLookUp.find(key) == m_archetypeLookUp.end())
-			{
-				std::unique_ptr<Archetype> newArchetype = std::make_unique<Archetype>(key);
-				m_archetypes.push_back(std::move(newArchetype));
-				m_archetypeLookUp[key] = m_archetypes.size() - 1;
-			}
 
-			m_archetypes.at(m_archetypeLookUp[key])->addEntity(_entity, entityData);
+			getOrCreateArchetype(key)->addEntity(_entity, entityData);
 
 			for (size_t i = 0; i < ComponentLibrary::getComponentCount(); i++)
 			{
@@ -125,12 +107,7 @@ namespace tra::ecs
 
 			if (oldArchetype)
 			{
-				auto result = oldArchetype->removeEntity(oldEntityData);
-				if (result)
-				{
-					EntityData& entityMovedData = m_entityManager.getEntityData(m_entityManager.getEntityById(result.value().first));
-					entityMovedData.m_row = result.value().second;
-				}
+				removeEntityFromArchetype(oldArchetype, oldEntityData);
 			}
 		}
 
@@ -152,6 +129,9 @@ namespace tra::ecs
 		EntityManager m_entityManager;
 		std::vector<std::unique_ptr<Archetype>> m_archetypes;
 		std::unordered_map<ArchetypeKey, size_t> m_archetypeLookUp;
+
+		TRA_API Archetype* getOrCreateArchetype(const ArchetypeKey _key);
+		TRA_API void removeEntityFromArchetype(Archetype* _archetype, EntityData& _entityData);
 	};
 }
 
