@@ -8,7 +8,7 @@
 
 using namespace tra;
 
-constexpr size_t ENTITY_COUNT = 100000;
+constexpr size_t ENTITY_COUNT = ecs::MAX_ENTITIES - 1;
 
 TRA_REGISTER_COMPONENT(TestComponent,
 	int m_int = 2;

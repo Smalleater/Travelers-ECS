@@ -130,7 +130,7 @@ namespace tra::ecs
 			std::sort(m_freeChunkIndices.begin(), m_freeChunkIndices.end(),
 				[](const size_t _a, const size_t _b)
 				{
-					return _a > _b;
+					return _a < _b;
 				}
 			);
 		}
