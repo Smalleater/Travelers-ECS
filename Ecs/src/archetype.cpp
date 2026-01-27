@@ -1,10 +1,9 @@
 #include "TRA/ecs/archetype.hpp"
 
-#include <iostream>
-
 #include <cassert>
 #include <malloc.h>
 #include <algorithm>
+#include <stdexcept>
 
 #include "TRA/ecs/entity.hpp"
 #include "TRA/ecs/entityData.hpp"

@@ -1,6 +1,6 @@
 #include "TRA/ecs/entityManager.hpp"
 
-#include <iostream>
+#include <stdexcept>
 
 namespace tra::ecs
 {
