@@ -43,6 +43,25 @@ namespace tra::ecs
 		return m_archetypes.at(m_archetypeLookUp.at(_key)).get();
 	}
 
+	void World::copyComponentsToArchetype(Archetype* _srcArch, Archetype* _dstArch, 
+		const EntityData& _srcData, const EntityData& _dstData, const EntitySignature& _entitySignature)
+	{
+		for (size_t i = 0; i < ComponentLibrary::getComponentCount(); i++)
+		{
+			if (!_entitySignature.hasComponent(i))
+			{
+				continue;
+			}
+
+			const ComponentInfo& moveCompInfo = ComponentLibrary::get(i);
+
+			uint8_t* src = _srcArch->getComponentPtr(_srcData, i);
+			uint8_t* dst = _dstArch->getComponentPtr(_dstData, i);
+
+			moveCompInfo.m_moveFunc(dst, src);
+		}
+	}
+
 	void World::removeEntityFromArchetype(Archetype* _archetype, EntityData& _entityData)
 	{
 		auto result = _archetype->removeEntity(_entityData);

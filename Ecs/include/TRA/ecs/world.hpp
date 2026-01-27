@@ -47,20 +47,7 @@ namespace tra::ecs
 			uint8_t* dst = archetype->getComponentPtr(entityData, componentInfo.m_id);
 			new(dst) T(_component);
 
-			for (size_t i = 0; i < ComponentLibrary::getComponentCount(); i++)
-			{
-				if (!oldSignature.hasComponent(i))
-				{
-					continue;
-				}
-
-				const ComponentInfo& moveCompInfo = ComponentLibrary::get(i);
-
-				uint8_t* src = oldArchetype->getComponentPtr(oldEntityData, i);
-				uint8_t* dst = m_archetypes.at(m_archetypeLookUp[key])->getComponentPtr(entityData, i);
-
-				moveCompInfo.m_moveFunc(dst, src);
-			}
+			copyComponentsToArchetype(oldArchetype, archetype, oldEntityData, entityData, oldSignature);
 
 			if (oldArchetype)
 			{
@@ -87,23 +74,11 @@ namespace tra::ecs
 			Archetype* oldArchetype = entityData.m_archetype;
 
 			ArchetypeKey key(entitySignature.m_components);
+			Archetype* archetype = getOrCreateArchetype(key);
 
-			getOrCreateArchetype(key)->addEntity(_entity, entityData);
+			archetype->addEntity(_entity, entityData);
 
-			for (size_t i = 0; i < ComponentLibrary::getComponentCount(); i++)
-			{
-				if (!entitySignature.hasComponent(i) || i == componentInfo.m_id)
-				{
-					continue;
-				}
-
-				const ComponentInfo& moveCompInfo = ComponentLibrary::get(i);
-
-				uint8_t* src = oldArchetype->getComponentPtr(oldEntityData, i);
-				uint8_t* dst = m_archetypes.at(m_archetypeLookUp[key])->getComponentPtr(entityData, i);
-
-				moveCompInfo.m_moveFunc(dst, src);
-			}
+			copyComponentsToArchetype(oldArchetype, archetype, oldEntityData, entityData, entitySignature);
 
 			if (oldArchetype)
 			{
@@ -131,6 +106,8 @@ namespace tra::ecs
 		std::unordered_map<ArchetypeKey, size_t> m_archetypeLookUp;
 
 		TRA_API Archetype* getOrCreateArchetype(const ArchetypeKey _key);
+		TRA_API void copyComponentsToArchetype(Archetype* _srcArch, Archetype* _dstArch, 
+			const EntityData& _srcData, const EntityData& _dstData, const EntitySignature& _entitySignature);
 		TRA_API void removeEntityFromArchetype(Archetype* _archetype, EntityData& _entityData);
 	};
 }
