@@ -30,8 +30,7 @@ namespace tra::ecs
 
 			if (entitySignature.hasComponent(componentInfo.m_id))
 			{
-				TRA_WARNING_LOG("TRA ECS: Attempted to add a component that the entity already possesses.");
-				return;
+				throw std::runtime_error("TRA ECS: Attempted to add a component that the entity already possesses.");
 			}
 
 			entitySignature.addComponent(componentInfo.m_id);
@@ -63,8 +62,7 @@ namespace tra::ecs
 
 			if (!entitySignature.hasComponent(componentInfo.m_id))
 			{
-				TRA_WARNING_LOG("TRA ECS: Attempted to remove a component that the entity does not possess.");
-				return;
+				throw std::runtime_error("TRA ECS: Attempted to remove a component that the entity does not possess.");
 			}
 
 			entitySignature.removeComponent(componentInfo.m_id);
