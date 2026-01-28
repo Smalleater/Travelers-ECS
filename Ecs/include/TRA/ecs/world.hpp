@@ -9,6 +9,7 @@
 #include "TRA/ecs/entityManager.hpp"
 #include "TRA/ecs/archetype.hpp"
 #include "TRA/ecs/componentLibrary.hpp"
+#include "TRA/ecs/tag.hpp"
 
 namespace tra::ecs
 {
@@ -22,18 +23,27 @@ namespace tra::ecs
 		TRA_API void destroyEntity(const Entity _entity);
 
 		template<typename T>
+		bool hasComponent(const Entity _entity)
+		{
+			const size_t& componentId = ComponentLibrary::getComponent<T>().m_id;
+			EntitySignature& entitySignature = m_entityManager.getSignature(_entity);
+
+			return entitySignature.hasComponent(componentId);
+		}
+
+		template<typename T>
 		void addComponent(const Entity _entity, const T& _component)
 		{
-			const ComponentInfo& componentInfo = ComponentLibrary::getComponent<T>();
+			const size_t componentId = ComponentLibrary::getComponent<T>().m_id;
 			EntitySignature& entitySignature = m_entityManager.getSignature(_entity);
 			EntitySignature oldSignature = entitySignature;
 
-			if (entitySignature.hasComponent(componentInfo.m_id))
+			if (entitySignature.hasComponent(componentId))
 			{
 				throw std::runtime_error("TRA ECS: Attempted to add a component that the entity already possesses.");
 			}
 
-			entitySignature.addComponent(componentInfo.m_id);
+			entitySignature.addComponent(componentId);
 
 			EntityData& entityData = m_entityManager.getEntityData(_entity);
 			EntityData oldEntityData = entityData;
@@ -43,7 +53,7 @@ namespace tra::ecs
 			Archetype* archetype = getOrCreateArchetype(key);
 
 			archetype->addEntity(_entity, entityData);
-			uint8_t* dst = archetype->getComponentPtr(entityData, componentInfo.m_id);
+			uint8_t* dst = archetype->getComponentPtr(entityData, componentId);
 			new(dst) T(_component);
 
 			copyComponentsToArchetype(oldArchetype, archetype, oldEntityData, entityData, oldSignature);
@@ -57,15 +67,15 @@ namespace tra::ecs
 		template<typename T>
 		void removeComponent(const Entity _entity)
 		{
-			const ComponentInfo& componentInfo = ComponentLibrary::getComponent<T>();
+			const size_t componentId = ComponentLibrary::getComponent<T>().m_id;
 			EntitySignature& entitySignature = m_entityManager.getSignature(_entity);
 
-			if (!entitySignature.hasComponent(componentInfo.m_id))
+			if (!entitySignature.hasComponent(componentId))
 			{
 				throw std::runtime_error("TRA ECS: Attempted to remove a component that the entity does not possess.");
 			}
 
-			entitySignature.removeComponent(componentInfo.m_id);
+			entitySignature.removeComponent(componentId);
 
 			EntityData& entityData = m_entityManager.getEntityData(_entity);
 			EntityData oldEntityData = entityData;
@@ -101,8 +111,8 @@ namespace tra::ecs
 		template<typename T>
 		void setComponent(const Entity _entity, const T& _component)
 		{
-			const EntitySignature& signature = m_entityManager.getSignature(_entity);
 			const size_t componentId = ComponentLibrary::getComponent<T>().m_id;
+			const EntitySignature& signature = m_entityManager.getSignature(_entity);
 
 			if (!signature.hasComponent(componentId))
 			{
@@ -113,6 +123,43 @@ namespace tra::ecs
 
 			uint8_t* dst = entityData.m_archetype->getComponentPtr(entityData, componentId);
 			new(dst) T(_component);
+		}
+
+		template<typename T>
+		bool hasTag(const Entity _entity)
+		{
+			const size_t tagId = TagLibrary::getTagId<T>();
+			EntitySignature& entitySignature = m_entityManager.getSignature(_entity);
+
+			return entitySignature.hasTag(tagId);
+		}
+
+		template<typename T>
+		void addTag(const Entity _entity)
+		{
+			const size_t tagId = TagLibrary::getTagId<T>();
+			EntitySignature& entitySignature = m_entityManager.getSignature(_entity);
+
+			if (entitySignature.hasTag(tagId))
+			{
+				throw std::runtime_error("TRA ECS: Attempted to add a tag that the entity already possesses.");
+			}
+
+			entitySignature.addTag(tagId);
+		}
+
+		template<typename T>
+		void removeTag(const Entity _entity)
+		{
+			const size_t tagId = TagLibrary::getTagId<T>();
+			EntitySignature& entitySignature = m_entityManager.getSignature(_entity);
+
+			if (!entitySignature.hasTag(tagId))
+			{
+				throw std::runtime_error("TRA ECS: Attempted to remove a tag that the entity does not possess.");
+			}
+
+			entitySignature.removeTag(tagId);
 		}
 
 	private:

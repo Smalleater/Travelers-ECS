@@ -10,8 +10,8 @@ using namespace tra;
 
 constexpr size_t ENTITY_COUNT = 100;
 
-//TRA_REGISTER_TAG(TestTag1);
-//TRA_REGISTER_TAG(TestTag2);
+TRA_REGISTER_TAG(TestTag1);
+TRA_REGISTER_TAG(TestTag2);
 
 TRA_REGISTER_COMPONENT(TestComponent,
 	int m_int = 2;
@@ -51,9 +51,19 @@ int main()
 	for (size_t i = 0; i < ENTITY_COUNT; i++)
 	{
 		entities[i] = ecsWorld.createEntity();
+		if (i == 5)
+		{
+			continue;
+		}
+
 		ecsWorld.addComponent(entities[i], ecs::TestComponent{});
+		ecsWorld.addTag<ecs::TestTag1>(entities[i]);
 		ecsWorld.addComponent(entities[i], ecs::TestNonTrivialComponent(5, 6.3f, "World Hello"));
+		ecsWorld.addTag<ecs::TestTag2>(entities[i]);
 	}
+
+	std::cout << "Entity 5 haseComponent TestComponent: " << ecsWorld.hasComponent<ecs::TestComponent>(entities[5]) << std::endl;
+	std::cout << "Entity 5 haseTag TestTag2: " << ecsWorld.hasTag<ecs::TestTag2>(entities[5]) << std::endl;
 
 	std::cout << "Start remove component" << std::endl;
 

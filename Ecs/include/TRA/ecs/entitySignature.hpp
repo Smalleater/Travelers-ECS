@@ -30,10 +30,10 @@ namespace tra::ecs
 
 		TRA_API bool hasComponent(const size_t _componentId) const;
 
-		void addTag(const size_t _tagId);
-		void removeTag(const size_t _tagId);
+		TRA_API void addTag(const size_t _tagId);
+		TRA_API void removeTag(const size_t _tagId);
 
-		bool hasTag(const size_t _tagId) const;
+		TRA_API bool hasTag(const size_t _tagId) const;
 	};
 
 	constexpr EntitySignature NULL_ENTITY_SIGNATURE = EntitySignature{};

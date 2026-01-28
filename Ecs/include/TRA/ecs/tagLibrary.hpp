@@ -26,6 +26,12 @@ namespace tra::ecs
 			m_tagtLookUp.insert({ typeid(T), id });
 		}
 
+		template<typename T>
+		static size_t getTagId()
+		{
+			return m_tagtLookUp.at(typeid(T));
+		}
+
 	private:
 		TRA_API static std::unordered_map<std::type_index, size_t> m_tagtLookUp;
 	};
