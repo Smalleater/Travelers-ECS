@@ -19,7 +19,7 @@ namespace tra::ecs
 		~World() = default;
 
 		TRA_API Entity createEntity();
-		TRA_API void deleteEntity(const Entity _entity);
+		TRA_API void destroyEntity(const Entity _entity);
 
 		template<typename T>
 		void addComponent(const Entity _entity, const T& _component)
@@ -87,7 +87,7 @@ namespace tra::ecs
 		template<typename T>
 		T& getComponent(const Entity _entity)
 		{
-			EntitySignature& signature = m_entityManager.getSignature(_entity);
+			const EntitySignature& signature = m_entityManager.getSignature(_entity);
 
 			if (!signature.hasComponent(ComponentLibrary::get<T>().m_id))
 			{
@@ -96,6 +96,23 @@ namespace tra::ecs
 
 			EntityData& entityData = m_entityManager.getEntityData(_entity);
 			return entityData.m_archetype->getComponent<T>(entityData);
+		}
+
+		template<typename T>
+		void setComponent(const Entity _entity, const T& _component)
+		{
+			const EntitySignature& signature = m_entityManager.getSignature(_entity);
+			const size_t componentId = ComponentLibrary::get<T>().m_id;
+
+			if (!signature.hasComponent(componentId))
+			{
+				throw std::runtime_error("TRA ECS: Tried to set a component the entity does not have.");
+			}
+
+			EntityData& entityData = m_entityManager.getEntityData(_entity);
+
+			uint8_t* dst = entityData.m_archetype->getComponentPtr(entityData, componentId);
+			new(dst) T(_component);
 		}
 
 	private:

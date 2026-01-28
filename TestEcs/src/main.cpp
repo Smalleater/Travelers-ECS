@@ -8,7 +8,7 @@
 
 using namespace tra;
 
-constexpr size_t ENTITY_COUNT = ecs::MAX_ENTITIES - 1;
+constexpr size_t ENTITY_COUNT = 10;
 
 TRA_REGISTER_COMPONENT(TestComponent,
 	int m_int = 2;
@@ -48,21 +48,31 @@ int main()
 	for (size_t i = 0; i < ENTITY_COUNT; i++)
 	{
 		entities[i] = ecsWorld.createEntity();
-		ecsWorld.addComponent<ecs::TestComponent>(entities[i], ecs::TestComponent{});
-		ecsWorld.addComponent<ecs::TestNonTrivialComponent>(entities[i], ecs::TestNonTrivialComponent(5, 6.3f, "World Hello"));
+		ecsWorld.addComponent(entities[i], ecs::TestComponent{});
+		ecsWorld.addComponent(entities[i], ecs::TestNonTrivialComponent(5, 6.3f, "World Hello"));
 	}
 
 	std::cout << "Start remove component" << std::endl;
 
+	ecs::TestComponent testComponent = ecsWorld.getComponent<ecs::TestComponent>(entities[5]);
+	std::cout << "Befor set value int: " << testComponent.m_int << " float: " << testComponent.m_float << std::endl;
+
+	testComponent.m_int = 26;
+	testComponent.m_float = 3.654f;
+
+	ecsWorld.setComponent(entities[5], testComponent);
+
+	testComponent = ecsWorld.getComponent<ecs::TestComponent>(entities[5]);
+	std::cout << "After set value int: " << testComponent.m_int << " float: " << testComponent.m_float << std::endl;
+
 	for (size_t i = 0; i < ENTITY_COUNT; i++)
 	{
-		ecsWorld.removeComponent<ecs::TestComponent>(entities[i]);
+		ecsWorld.destroyEntity(entities[i]);
 	}
 
 	std::chrono::time_point end = mainClock.now();
-	long long duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-
-	std::cout << "Duration = " << duration << " ms" << std::endl;
+	long long duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+	std::cout << "Duration = " << duration << " microseconds" << std::endl;
 
 	system("pause");
 

@@ -20,7 +20,7 @@ namespace tra::ecs
 		return entity;
 	}
 
-	void World::deleteEntity(const Entity _entity)
+	void World::destroyEntity(const Entity _entity)
 	{
 		EntityData& entityData = m_entityManager.getEntityData(_entity);
 		if (entityData.m_archetype)
