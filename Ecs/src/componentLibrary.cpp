@@ -2,12 +2,15 @@
 
 namespace tra::ecs
 {
-	const ComponentInfo& ComponentLibrary::get(size_t _id)
+	std::vector<ComponentInfo> ComponentLibrary::m_components;
+	std::unordered_map<std::type_index, size_t> ComponentLibrary::m_componentLookUp;
+
+	const ComponentInfo& ComponentLibrary::getComponent(size_t _id)
 	{
 		return m_components.at(_id);
 	}
 
-	const size_t ComponentLibrary::getComponentCount()
+	const size_t ComponentLibrary::getCount()
 	{
 		return m_components.size();
 	}

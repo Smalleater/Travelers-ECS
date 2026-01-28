@@ -93,7 +93,7 @@ namespace tra::ecs
 				}
 				else
 				{
-					ComponentLibrary::get(column.m_componentId).m_moveFunc(dst, src);
+					ComponentLibrary::getComponent(column.m_componentId).m_moveFunc(dst, src);
 				}
 			}
 		}
@@ -107,7 +107,7 @@ namespace tra::ecs
 
 			uint8_t* src = chunk.m_data + column.m_offset + rowToDestroy * column.m_stride;
 
-			if (auto destroyFunc = ComponentLibrary::get(column.m_componentId).m_destroyFunc)
+			if (auto destroyFunc = ComponentLibrary::getComponent(column.m_componentId).m_destroyFunc)
 			{
 				destroyFunc(src);
 			}
@@ -173,7 +173,7 @@ namespace tra::ecs
 
 		for (auto id : m_componentIds)
 		{
-			componentsInfo.push_back(&ComponentLibrary::get(id));
+			componentsInfo.push_back(&ComponentLibrary::getComponent(id));
 		}
 
 		std::sort(componentsInfo.begin(), componentsInfo.end(),
@@ -218,7 +218,7 @@ namespace tra::ecs
 
 		for (auto id : m_componentIds)
 		{
-			const ComponentInfo& info = ComponentLibrary::get(id);
+			const ComponentInfo& info = ComponentLibrary::getComponent(id);
 			offset = alignUp(offset, info.m_alignment);
 			layout.m_columns.push_back(ChunkColumn{ info.m_id, static_cast<uint16_t>(offset), info.m_size });
 			offset += capacity * info.m_size;

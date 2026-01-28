@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <typeindex>
 
+#include "TRA/ecs/entitySignature.hpp"
 #include "TRA/ecs/componentInfo.hpp"
 
 namespace tra::ecs
@@ -15,9 +16,14 @@ namespace tra::ecs
 	{
 	public:
 		template<typename T>
-		static size_t registerComponent()
+		static void registerComponent()
 		{
 			size_t id = m_components.size();
+
+			if (id >= MAX_COMPONENTS)
+			{
+				throw std::runtime_error("TRA ECS: Exceeding component limit.");
+			}
 
 			ComponentInfo info;
 			info.m_size = sizeof(T);
@@ -42,23 +48,21 @@ namespace tra::ecs
 			}
 
 			m_components.push_back(info);
-			m_componentLookUp.insert({ typeid(T), m_components.size() - 1 });
-
-			return id;
+			m_componentLookUp.insert({ typeid(T), id });
 		}
 
 		template<typename T>
-		static const ComponentInfo& get()
+		static const ComponentInfo& getComponent()
 		{
 			return m_components.at(m_componentLookUp.at(typeid(T)));
 		}
 
-		TRA_API static const ComponentInfo& get(size_t _id);
-		TRA_API static const size_t getComponentCount();
+		TRA_API static const ComponentInfo& getComponent(size_t _id);
+		TRA_API static const size_t getCount();
 
 	private:
-		TRA_API static inline std::vector<ComponentInfo> m_components;
-		TRA_API static inline std::unordered_map<std::type_index, size_t> m_componentLookUp;
+		TRA_API static std::vector<ComponentInfo> m_components;
+		TRA_API static std::unordered_map<std::type_index, size_t> m_componentLookUp;
 	};
 }
 

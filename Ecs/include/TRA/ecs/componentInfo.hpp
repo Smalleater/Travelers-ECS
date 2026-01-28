@@ -1,8 +1,6 @@
 #ifndef TRA_ECS_COMPONENT_INFO_HPP
 #define TRA_ECS_COMPONENT_INFO_HPP
 
-#include "TRA/ecs/chunkColumn.hpp"
-
 namespace tra::ecs
 {
 	struct ComponentInfo

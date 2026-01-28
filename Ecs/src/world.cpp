@@ -46,14 +46,14 @@ namespace tra::ecs
 	void World::copyComponentsToArchetype(Archetype* _srcArch, Archetype* _dstArch, 
 		const EntityData& _srcData, const EntityData& _dstData, const EntitySignature& _entitySignature)
 	{
-		for (size_t i = 0; i < ComponentLibrary::getComponentCount(); i++)
+		for (size_t i = 0; i < ComponentLibrary::getCount(); i++)
 		{
 			if (!_entitySignature.hasComponent(i))
 			{
 				continue;
 			}
 
-			const ComponentInfo& moveCompInfo = ComponentLibrary::get(i);
+			const ComponentInfo& moveCompInfo = ComponentLibrary::getComponent(i);
 
 			uint8_t* src = _srcArch->getComponentPtr(_srcData, i);
 			uint8_t* dst = _dstArch->getComponentPtr(_dstData, i);

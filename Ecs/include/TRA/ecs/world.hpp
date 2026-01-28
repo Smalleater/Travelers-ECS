@@ -24,7 +24,7 @@ namespace tra::ecs
 		template<typename T>
 		void addComponent(const Entity _entity, const T& _component)
 		{
-			const ComponentInfo& componentInfo = ComponentLibrary::get<T>();
+			const ComponentInfo& componentInfo = ComponentLibrary::getComponent<T>();
 			EntitySignature& entitySignature = m_entityManager.getSignature(_entity);
 			EntitySignature oldSignature = entitySignature;
 
@@ -57,7 +57,7 @@ namespace tra::ecs
 		template<typename T>
 		void removeComponent(const Entity _entity)
 		{
-			const ComponentInfo& componentInfo = ComponentLibrary::get<T>();
+			const ComponentInfo& componentInfo = ComponentLibrary::getComponent<T>();
 			EntitySignature& entitySignature = m_entityManager.getSignature(_entity);
 
 			if (!entitySignature.hasComponent(componentInfo.m_id))
@@ -102,7 +102,7 @@ namespace tra::ecs
 		void setComponent(const Entity _entity, const T& _component)
 		{
 			const EntitySignature& signature = m_entityManager.getSignature(_entity);
-			const size_t componentId = ComponentLibrary::get<T>().m_id;
+			const size_t componentId = ComponentLibrary::getComponent<T>().m_id;
 
 			if (!signature.hasComponent(componentId))
 			{

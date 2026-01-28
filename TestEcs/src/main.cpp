@@ -4,11 +4,14 @@
 
 #include "TRA/ecs/world.hpp"
 #include "TRA/ecs/component.hpp"
-#include "TRA/ecs/componentLibrary.hpp"
+#include "TRA/ecs/tag.hpp"
 
 using namespace tra;
 
-constexpr size_t ENTITY_COUNT = 10;
+constexpr size_t ENTITY_COUNT = 100;
+
+//TRA_REGISTER_TAG(TestTag1);
+//TRA_REGISTER_TAG(TestTag2);
 
 TRA_REGISTER_COMPONENT(TestComponent,
 	int m_int = 2;
@@ -54,7 +57,7 @@ int main()
 
 	std::cout << "Start remove component" << std::endl;
 
-	ecs::TestComponent testComponent = ecsWorld.getComponent<ecs::TestComponent>(entities[5]);
+	/*ecs::TestComponent testComponent = ecsWorld.getComponent<ecs::TestComponent>(entities[5]);
 	std::cout << "Befor set value int: " << testComponent.m_int << " float: " << testComponent.m_float << std::endl;
 
 	testComponent.m_int = 26;
@@ -63,7 +66,7 @@ int main()
 	ecsWorld.setComponent(entities[5], testComponent);
 
 	testComponent = ecsWorld.getComponent<ecs::TestComponent>(entities[5]);
-	std::cout << "After set value int: " << testComponent.m_int << " float: " << testComponent.m_float << std::endl;
+	std::cout << "After set value int: " << testComponent.m_int << " float: " << testComponent.m_float << std::endl;*/
 
 	for (size_t i = 0; i < ENTITY_COUNT; i++)
 	{
@@ -71,8 +74,8 @@ int main()
 	}
 
 	std::chrono::time_point end = mainClock.now();
-	long long duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-	std::cout << "Duration = " << duration << " microseconds" << std::endl;
+	long long duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+	std::cout << "Duration = " << duration << " ms" << std::endl;
 
 	system("pause");
 
