@@ -31,6 +31,112 @@ namespace tra::ecs
 		m_entityManager.deleteEntity(_entity);
 	}
 
+	bool World::hasComponentImpl(const Entity _entity, const size_t _componentId)
+	{
+		EntitySignature& entitySignature = m_entityManager.getSignature(_entity);
+		return entitySignature.hasComponent(_componentId);
+	}
+
+	void World::addComponentImpl(const Entity _entity, const size_t _componentId, std::function<void(uint8_t*)> _constructor)
+	{
+		EntitySignature& entitySignature = m_entityManager.getSignature(_entity);
+		EntitySignature oldSignature = entitySignature;
+
+		if (entitySignature.hasComponent(_componentId))
+		{
+			throw std::runtime_error("TRA ECS: Attempted to add a component that the entity already possesses.");
+		}
+
+		entitySignature.addComponent(_componentId);
+
+		EntityData& entityData = m_entityManager.getEntityData(_entity);
+		EntityData oldEntityData = entityData;
+		Archetype* oldArchetype = entityData.m_archetype;
+
+		ArchetypeKey key(entitySignature.m_components);
+		Archetype* archetype = getOrCreateArchetype(key);
+
+		archetype->addEntity(_entity, entityData);
+		uint8_t* dst = archetype->getComponentPtr(entityData, _componentId);
+		_constructor(dst);
+
+		copyComponentsToArchetype(oldArchetype, archetype, oldEntityData, entityData, oldSignature);
+
+		if (oldArchetype)
+		{
+			removeEntityFromArchetype(oldArchetype, oldEntityData);
+		}
+	}
+
+	void World::removeComponentImpl(const Entity _entity, const size_t _componentId)
+	{
+		EntitySignature& entitySignature = m_entityManager.getSignature(_entity);
+		if (!entitySignature.hasComponent(_componentId))
+		{
+			throw std::runtime_error("TRA ECS: Attempted to remove a component that the entity does not possess.");
+		}
+
+		entitySignature.removeComponent(_componentId);
+
+		EntityData& entityData = m_entityManager.getEntityData(_entity);
+		EntityData oldEntityData = entityData;
+		Archetype* oldArchetype = entityData.m_archetype;
+
+		ArchetypeKey key(entitySignature.m_components);
+		Archetype* archetype = getOrCreateArchetype(key);
+
+		archetype->addEntity(_entity, entityData);
+
+		copyComponentsToArchetype(oldArchetype, archetype, oldEntityData, entityData, entitySignature);
+
+		if (oldArchetype)
+		{
+			removeEntityFromArchetype(oldArchetype, oldEntityData);
+		}
+	}
+
+	void World::setComponentImpl(const Entity _entity, const size_t _componentId, std::function<void(uint8_t*)> _constructor)
+	{
+		const EntitySignature& signature = m_entityManager.getSignature(_entity);
+		if (!signature.hasComponent(_componentId))
+		{
+			throw std::runtime_error("TRA ECS: Tried to set a component the entity does not have.");
+		}
+
+		EntityData& entityData = m_entityManager.getEntityData(_entity);
+
+		uint8_t* dst = entityData.m_archetype->getComponentPtr(entityData, _componentId);
+		_constructor(dst);
+	}
+
+	bool World::hasTagImpl(const Entity _entity, const size_t _tagId)
+	{
+		EntitySignature& entitySignature = m_entityManager.getSignature(_entity);
+		return entitySignature.hasTag(_tagId);
+	}
+
+	void World::addTagImpl(const Entity _entity, const size_t _tagId)
+	{
+		EntitySignature& entitySignature = m_entityManager.getSignature(_entity);
+		if (entitySignature.hasTag(_tagId))
+		{
+			throw std::runtime_error("TRA ECS: Attempted to add a tag that the entity already possesses.");
+		}
+
+		entitySignature.addTag(_tagId);
+	}
+
+	void World::removeTagImpl(const Entity _entity, const size_t _tagId)
+	{
+		EntitySignature& entitySignature = m_entityManager.getSignature(_entity);
+		if (!entitySignature.hasTag(_tagId))
+		{
+			throw std::runtime_error("TRA ECS: Attempted to remove a tag that the entity does not possess.");
+		}
+
+		entitySignature.removeTag(_tagId);
+	}
+
 	Archetype* World::getOrCreateArchetype(const ArchetypeKey _key)
 	{
 		if (m_archetypeLookUp.find(_key) == m_archetypeLookUp.end())
