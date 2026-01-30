@@ -144,6 +144,8 @@ namespace tra::ecs
 			std::unique_ptr<Archetype> newArchetype = std::make_unique<Archetype>(_key);
 			m_archetypes.push_back(std::move(newArchetype));
 			m_archetypeLookUp.insert({ _key, m_archetypes.size() - 1 });
+
+			m_queryArchetypeCache.clear();
 		}
 
 		return m_archetypes.at(m_archetypeLookUp.at(_key)).get();

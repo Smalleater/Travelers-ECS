@@ -15,16 +15,10 @@
 namespace tra::ecs
 {
 	template<typename... T>
-	struct WithComponent
-	{
-
-	};
+	struct WithComponent {};
 
 	template<typename... T>
-	struct WithoutComponent
-	{
-
-	};
+	struct WithoutComponent {};
 
 	class World
 	{
@@ -111,24 +105,37 @@ namespace tra::ecs
 		std::vector<std::tuple<Entity, WithComps*...>> queryEntities(
 			WithComponent<WithComps...> _withComponents, WithoutComponent<WithoutComps...> _withoutComponents = WithoutComponent<>{})
 		{
-			ArchetypeKey withKey;
-			ArchetypeKey withoutKey;
+			ArchetypeKey cashKey;
 
-			(withKey.addComponent(ComponentLibrary::getComponent<WithComps>().m_id), ...);
-			(withoutKey.addComponent(ComponentLibrary::getComponent<WithoutComps>().m_id), ...);
+			(cashKey.addComponent(ComponentLibrary::getComponent<WithComps>().m_id), ...);
+			(cashKey.removeComponent(ComponentLibrary::getComponent<WithoutComps>().m_id), ...);
 
-			std::vector<Archetype*> archetypes;
-			for (size_t i = 0; i < m_archetypes.size(); i++)
+			auto it = m_queryArchetypeCache.find(cashKey);
+			if (it == m_queryArchetypeCache.end())
 			{
-				if (ArchetypeKey::matches(m_archetypes[i]->getKey(), withKey, withoutKey))
+				ArchetypeKey withKey;
+				ArchetypeKey withoutKey;
+
+				(withKey.addComponent(ComponentLibrary::getComponent<WithComps>().m_id), ...);
+				(withoutKey.addComponent(ComponentLibrary::getComponent<WithoutComps>().m_id), ...);
+
+				std::vector<Archetype*> archetypes;
+				for (size_t i = 0; i < m_archetypes.size(); ++i)
 				{
-					archetypes.push_back(m_archetypes[i].get());
+					Archetype* archetype = m_archetypes.at(i).get();
+					if (ArchetypeKey::matches(archetype->getKey(), withKey, withoutKey))
+					{
+						archetypes.push_back(archetype);
+					}
 				}
+
+				auto result = m_queryArchetypeCache.insert({ cashKey, std::move(archetypes) });
+				it = result.first;
 			}
 
 			std::vector<std::tuple<Entity, WithComps*...>> result;
 
-			for (auto archetype : archetypes)
+			for (auto archetype : it->second)
 			{
 				for (EntityId entityId : archetype->getEntitiesId())
 				{
@@ -146,6 +153,7 @@ namespace tra::ecs
 		EntityManager m_entityManager;
 		std::vector<std::unique_ptr<Archetype>> m_archetypes;
 		std::unordered_map<ArchetypeKey, size_t> m_archetypeLookUp;
+		std::unordered_map<ArchetypeKey, std::vector<Archetype*>> m_queryArchetypeCache;
 
 		TRA_API bool hasComponentImpl(const Entity _entity, const size_t _componentId);
 		TRA_API void addComponentImpl(const Entity _entity, const size_t _componentId, std::function<void(uint8_t*)> _constructor);

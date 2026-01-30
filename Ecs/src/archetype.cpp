@@ -67,6 +67,8 @@ namespace tra::ecs
 		{
 			m_freeChunkIndices.pop_back();
 		}
+
+		m_entitiesIdCache.clear();
 	}
 
 	std::optional<std::pair<EntityId, size_t>> Archetype::removeEntity(EntityData& _entityData)
@@ -139,25 +141,32 @@ namespace tra::ecs
 			);
 		}
 
+		m_entitiesIdCache.clear();
+
 		return deadRow != lastRow ? std::make_optional(std::make_pair(movedEntityId, deadRow)) : std::nullopt;
 	}
 
 	std::vector<EntityId> Archetype::getEntitiesId()
 	{
-		std::vector<EntityId> result;
-		const ChunkColumn& entityColumn = m_layout.m_columns[0];
-
-		for (auto& chunk : m_chunks)
+		if (m_entitiesIdCache.size() == 0)
 		{
-			uint32_t* entityIds = reinterpret_cast<uint32_t*>(chunk.m_data + entityColumn.m_offset);
+			std::vector<EntityId> result;
+			const ChunkColumn& entityColumn = m_layout.m_columns[0];
 
-			for (size_t i = 0; i < chunk.m_count; ++i)
+			for (auto& chunk : m_chunks)
 			{
-				result.push_back(entityIds[i]);
+				uint32_t* entityIds = reinterpret_cast<uint32_t*>(chunk.m_data + entityColumn.m_offset);
+
+				for (size_t i = 0; i < chunk.m_count; ++i)
+				{
+					result.push_back(entityIds[i]);
+				}
 			}
+
+			m_entitiesIdCache = std::move(result);
 		}
 
-		return result;
+		return m_entitiesIdCache;
 	}
 
 	uint8_t* Archetype::getComponentPtr(const EntityData& _entityData, const size_t _componentid)

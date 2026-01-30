@@ -8,7 +8,7 @@
 
 using namespace tra;
 
-constexpr size_t ENTITY_COUNT = 100;
+constexpr size_t ENTITY_COUNT = 2000000;
 
 TRA_REGISTER_TAG(TestTag1);
 TRA_REGISTER_TAG(TestTag2);
@@ -46,7 +46,7 @@ int main()
 	entities.resize(ENTITY_COUNT, ecs::NULL_ENTITY);
 
 	std::chrono::high_resolution_clock mainClock;
-	std::chrono::time_point start = mainClock.now();
+	
 
 	for (size_t i = 0; i < ENTITY_COUNT; i++)
 	{
@@ -67,38 +67,30 @@ int main()
 
 	std::cout << "Start remove component" << std::endl;
 
-	/*ecs::TestComponent testComponent = ecsWorld.getComponent<ecs::TestComponent>(entities[5]);
-	std::cout << "Befor set value int: " << testComponent.m_int << " float: " << testComponent.m_float << std::endl;
-
-	testComponent.m_int = 26;
-	testComponent.m_float = 3.654f;
-
-	ecsWorld.setComponent(entities[5], testComponent);
-
-	testComponent = ecsWorld.getComponent<ecs::TestComponent>(entities[5]);
-	std::cout << "After set value int: " << testComponent.m_int << " float: " << testComponent.m_float << std::endl;*/
-
 	std::cout << std::endl;
 	std::cout << "Query: " << std::endl;
 	std::cout << std::endl;
 
-	for (auto& [entity, nonTrivialComponentPtr] : ecsWorld.queryEntities(
-		ecs::WithComponent<ecs::TestNonTrivialComponent>{}))
-	{
-		std::cout << "EntityId: " << std::to_string(entity.id()) << " ComponentValue: int-" << nonTrivialComponentPtr->m_int
-			<< " float-" << nonTrivialComponentPtr->m_float << " string-" << nonTrivialComponentPtr->m_string << std::endl;
-	}
+	std::chrono::time_point start = mainClock.now();
 
-	std::cout << std::endl;
-
-	for (size_t i = 0; i < ENTITY_COUNT; i++)
+	for (size_t i = 0; i < 7; i++)
 	{
-		ecsWorld.destroyEntity(entities[i]);
+		for (auto& [entity, nonTrivialComponentPtr] : ecsWorld.queryEntities(
+			ecs::WithComponent<ecs::TestNonTrivialComponent>{}))
+		{
+			/*std::cout << "EntityId: " << std::to_string(entity.id()) << " ComponentValue: int-" << nonTrivialComponentPtr->m_int
+				<< " float-" << nonTrivialComponentPtr->m_float << " string-" << nonTrivialComponentPtr->m_string << std::endl;*/
+		}
 	}
 
 	std::chrono::time_point end = mainClock.now();
 	long long duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 	std::cout << "Duration = " << duration << " ms" << std::endl;
+
+	for (size_t i = 0; i < ENTITY_COUNT; i++)
+	{
+		ecsWorld.destroyEntity(entities[i]);
+	}
 
 	system("pause");
 

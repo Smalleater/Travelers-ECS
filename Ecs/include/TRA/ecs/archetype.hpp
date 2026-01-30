@@ -45,6 +45,8 @@ namespace tra::ecs
 		std::vector<Chunk> m_chunks;
 		std::vector<size_t> m_freeChunkIndices;
 
+		std::vector<EntityId> m_entitiesIdCache;
+
 		constexpr size_t alignUp(size_t _value, size_t _alignment)
 		{
 			return (_value + _alignment - 1) & ~(_alignment - 1);
