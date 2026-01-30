@@ -14,6 +14,18 @@
 
 namespace tra::ecs
 {
+	template<typename... T>
+	struct WithComponent
+	{
+
+	};
+
+	template<typename... T>
+	struct WithoutComponent
+	{
+
+	};
+
 	class World
 	{
 	public:
@@ -34,7 +46,7 @@ namespace tra::ecs
 		void addComponent(const Entity _entity, const T& _component)
 		{
 			const size_t componentId = ComponentLibrary::getComponent<T>().m_id;
-			addComponentImpl(_entity, componentId, 
+			addComponentImpl(_entity, componentId,
 				[&_component](uint8_t* _dst)
 				{
 					new(_dst) T(_component);
@@ -50,7 +62,7 @@ namespace tra::ecs
 		}
 
 		template<typename T>
-		T& getComponent(const Entity _entity)
+		T* getComponent(const Entity _entity)
 		{
 			const EntitySignature& signature = m_entityManager.getSignature(_entity);
 			if (!signature.hasComponent(ComponentLibrary::get<T>().m_id))
@@ -59,14 +71,14 @@ namespace tra::ecs
 			}
 
 			EntityData& entityData = m_entityManager.getEntityData(_entity);
-			return entityData.m_archetype->getComponent<T>(entityData);
+			return entityData.m_archetype->getComponentPtr<T>(entityData);
 		}
 
 		template<typename T>
 		void setComponent(const Entity _entity, const T& _component)
 		{
 			const size_t componentId = ComponentLibrary::getComponent<T>().m_id;
-			setComponentImpl(_entity, componentId, 
+			setComponentImpl(_entity, componentId,
 				[&_component](uint8_t* _dst)
 				{
 					new(_dst) T(_component);
@@ -95,6 +107,41 @@ namespace tra::ecs
 			removeTagImpl(_entity, tagId);
 		}
 
+		template<typename... WithComps, typename... WithoutComps>
+		std::vector<std::tuple<Entity, WithComps*...>> queryEntities(
+			WithComponent<WithComps...> _withComponents, WithoutComponent<WithoutComps...> _withoutComponents = WithoutComponent<>{})
+		{
+			ArchetypeKey withKey;
+			ArchetypeKey withoutKey;
+
+			(withKey.addComponent(ComponentLibrary::getComponent<WithComps>().m_id), ...);
+			(withoutKey.addComponent(ComponentLibrary::getComponent<WithoutComps>().m_id), ...);
+
+			std::vector<Archetype*> archetypes;
+			for (size_t i = 0; i < m_archetypes.size(); i++)
+			{
+				if (ArchetypeKey::matches(m_archetypes[i]->getKey(), withKey, withoutKey))
+				{
+					archetypes.push_back(m_archetypes[i].get());
+				}
+			}
+
+			std::vector<std::tuple<Entity, WithComps*...>> result;
+
+			for (auto archetype : archetypes)
+			{
+				for (EntityId entityId : archetype->getEntitiesId())
+				{
+					Entity entity = m_entityManager.getEntityById(entityId);
+					EntityData& entityData = m_entityManager.getEntityData(entity);
+
+					result.emplace_back(entity, archetype->getComponentPtr<WithComps>(entityData)...);
+				}
+			}
+
+			return result;
+		}
+
 	private:
 		EntityManager m_entityManager;
 		std::vector<std::unique_ptr<Archetype>> m_archetypes;
@@ -110,7 +157,7 @@ namespace tra::ecs
 		TRA_API void removeTagImpl(const Entity _entity, const size_t _tagId);
 
 		Archetype* getOrCreateArchetype(const ArchetypeKey _key);
-		void copyComponentsToArchetype(Archetype* _srcArch, Archetype* _dstArch, 
+		void copyComponentsToArchetype(Archetype* _srcArch, Archetype* _dstArch,
 			const EntityData& _srcData, const EntityData& _dstData, const EntitySignature& _entitySignature);
 		void removeEntityFromArchetype(Archetype* _archetype, EntityData& _entityData);
 	};

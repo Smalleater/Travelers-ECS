@@ -9,11 +9,17 @@ namespace tra::ecs
 	{
 		std::array<uint64_t, COMPONENT_BLOCK> m_components{};
 
+		ArchetypeKey() = default;
 		TRA_API ArchetypeKey(const std::array<uint64_t, COMPONENT_BLOCK>& _components);
 		~ArchetypeKey() = default;
 
 		TRA_API bool operator==(const ArchetypeKey& _other) const;
 		bool operator!=(const ArchetypeKey& _other) const;
+
+		TRA_API static bool matches(const ArchetypeKey& _key, const ArchetypeKey& _required, const ArchetypeKey& _excluded);
+
+		TRA_API void addComponent(const size_t _componentId);
+		void removeComponent(const size_t _componentId);
 
 		bool hasComponent(const size_t _componentId) const;
 	};

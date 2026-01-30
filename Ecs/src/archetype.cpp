@@ -25,6 +25,11 @@ namespace tra::ecs
 		m_layout = buildChunkLayout();
 	}
 
+	ArchetypeKey Archetype::getKey()
+	{
+		return m_archetypeKey;
+	}
+
 	void Archetype::addEntity(const Entity _entity, EntityData& _entityData)
 	{
 		if (m_freeChunkIndices.empty())
@@ -135,6 +140,24 @@ namespace tra::ecs
 		}
 
 		return deadRow != lastRow ? std::make_optional(std::make_pair(movedEntityId, deadRow)) : std::nullopt;
+	}
+
+	std::vector<EntityId> Archetype::getEntitiesId()
+	{
+		std::vector<EntityId> result;
+		const ChunkColumn& entityColumn = m_layout.m_columns[0];
+
+		for (auto& chunk : m_chunks)
+		{
+			uint32_t* entityIds = reinterpret_cast<uint32_t*>(chunk.m_data + entityColumn.m_offset);
+
+			for (size_t i = 0; i < chunk.m_count; ++i)
+			{
+				result.push_back(entityIds[i]);
+			}
+		}
+
+		return result;
 	}
 
 	uint8_t* Archetype::getComponentPtr(const EntityData& _entityData, const size_t _componentid)

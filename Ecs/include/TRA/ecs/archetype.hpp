@@ -20,17 +20,21 @@ namespace tra::ecs
 		TRA_API Archetype(const ArchetypeKey& _signature);
 		~Archetype() = default;
 
+		TRA_API ArchetypeKey getKey();
+
 		TRA_API void addEntity(const Entity _entity, EntityData& _entityData);
 		TRA_API std::optional<std::pair<EntityId, size_t>> removeEntity(EntityData& _entityData);
 		
-		TRA_API uint8_t* getComponentPtr(const EntityData& _entityData, const size_t _componentid);
+		TRA_API std::vector<EntityId> getEntitiesId();
 
 		template<typename T>
-		T& getComponent(EntityData& _entityData)
+		T* getComponentPtr(const EntityData& _entityData)
 		{
-			size_t componentId = ComponentLibrary::get<T>().m_id;
-			return *reinterpret_cast<T*>(getComponentPtr(_entityData, componentId));
+			size_t componentId = ComponentLibrary::getComponent<T>().m_id;
+			return reinterpret_cast<T*>(getComponentPtr(_entityData, componentId));
 		}
+
+		TRA_API uint8_t* getComponentPtr(const EntityData& _entityData, const size_t _componentid);
 
 	private:
 		const ArchetypeKey m_archetypeKey;
