@@ -10,15 +10,15 @@ using namespace tra;
 
 constexpr size_t ENTITY_COUNT = 2000000;
 
-TRA_REGISTER_TAG(TestTag1);
-TRA_REGISTER_TAG(TestTag2);
+TRA_ECS_REGISTER_TAG(TestTag1);
+TRA_ECS_REGISTER_TAG(TestTag2);
 
-TRA_REGISTER_COMPONENT(TestComponent,
+TRA_ECS_REGISTER_COMPONENT(TestComponent,
 	int m_int = 2;
 	float m_float = 0.1f;
 )
 
-TRA_REGISTER_COMPONENT(TestNonTrivialComponent,
+TRA_ECS_REGISTER_COMPONENT(TestNonTrivialComponent,
 	int m_int;
 	float m_float;
 	std::string m_string;

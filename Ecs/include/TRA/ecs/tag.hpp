@@ -3,13 +3,13 @@
 
 #include "TRA/ecs/tagRegister.hpp"
 
-#define TRA_REGISTER_TAG(NAME) \
+#define TRA_ECS_REGISTER_TAG(NAME) \
 namespace tra::ecs \
 { \
 	struct NAME \
 	{ \
 	private: \
-		static inline TagRegister<NAME> m_tagRegister{}; \
+		static inline TagRegister<NAME> m_registrar{}; \
 	}; \
 } \
 
