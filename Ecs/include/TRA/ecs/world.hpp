@@ -11,6 +11,7 @@
 #include "TRA/ecs/archetype.hpp"
 #include "TRA/ecs/componentLibrary.hpp"
 #include "TRA/ecs/tag.hpp"
+#include "ISystem.hpp"
 
 namespace tra::ecs
 {
@@ -28,6 +29,9 @@ namespace tra::ecs
 
 		TRA_API Entity createEntity();
 		TRA_API void destroyEntity(const Entity _entity);
+
+		TRA_API void addSystem(std::unique_ptr<ISystem> _ptr);
+		TRA_API void updateSystems();
 
 		template<typename T>
 		bool hasComponent(const Entity _entity)
@@ -154,6 +158,7 @@ namespace tra::ecs
 		std::vector<std::unique_ptr<Archetype>> m_archetypes;
 		std::unordered_map<ArchetypeKey, size_t> m_archetypeLookUp;
 		std::unordered_map<ArchetypeKey, std::vector<Archetype*>> m_queryArchetypeCache;
+		std::vector<std::unique_ptr<ISystem>> m_systems;
 
 		TRA_API bool hasComponentImpl(const Entity _entity, const size_t _componentId);
 		TRA_API void addComponentImpl(const Entity _entity, const size_t _componentId, std::function<void(uint8_t*)> _constructor);

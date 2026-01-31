@@ -8,7 +8,7 @@
 
 using namespace tra;
 
-constexpr size_t ENTITY_COUNT = 2000000;
+constexpr size_t ENTITY_COUNT = 10000;
 
 TRA_ECS_REGISTER_TAG(TestTag1);
 TRA_ECS_REGISTER_TAG(TestTag2);
@@ -26,9 +26,27 @@ TRA_ECS_REGISTER_COMPONENT(TestNonTrivialComponent,
 	TestNonTrivialComponent(int _int, float _float, std::string _string) : m_int(_int), m_float(_float), m_string(_string) {}
 )
 
+struct SystemTest : public ecs::ISystem
+{
+	void update(ecs::World* _world) override
+	{
+		for (size_t i = 0; i < 7; i++)
+		{
+			for (auto& [entity, nonTrivialComponentPtr] : _world->queryEntities(
+				ecs::WithComponent<ecs::TestNonTrivialComponent>{}))
+			{
+				/*std::cout << "EntityId: " << std::to_string(entity.id()) << " ComponentValue: int-" << nonTrivialComponentPtr->m_int
+					<< " float-" << nonTrivialComponentPtr->m_float << " string-" << nonTrivialComponentPtr->m_string << std::endl;*/
+			}
+		}
+	}
+};
+
 int main()
 {
 	ecs::World ecsWorld;
+
+	ecsWorld.addSystem(std::make_unique<SystemTest>());
 
 	std::cout << "TestComponent\n";
 	std::cout << "sizeof: " << sizeof(ecs::TestComponent) << "\n";
@@ -47,7 +65,6 @@ int main()
 
 	std::chrono::high_resolution_clock mainClock;
 	
-
 	for (size_t i = 0; i < ENTITY_COUNT; i++)
 	{
 		entities[i] = ecsWorld.createEntity();
@@ -73,15 +90,7 @@ int main()
 
 	std::chrono::time_point start = mainClock.now();
 
-	for (size_t i = 0; i < 7; i++)
-	{
-		for (auto& [entity, nonTrivialComponentPtr] : ecsWorld.queryEntities(
-			ecs::WithComponent<ecs::TestNonTrivialComponent>{}))
-		{
-			/*std::cout << "EntityId: " << std::to_string(entity.id()) << " ComponentValue: int-" << nonTrivialComponentPtr->m_int
-				<< " float-" << nonTrivialComponentPtr->m_float << " string-" << nonTrivialComponentPtr->m_string << std::endl;*/
-		}
-	}
+	ecsWorld.updateSystems();
 
 	std::chrono::time_point end = mainClock.now();
 	long long duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();

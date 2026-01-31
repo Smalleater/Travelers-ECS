@@ -31,6 +31,19 @@ namespace tra::ecs
 		m_entityManager.deleteEntity(_entity);
 	}
 
+	void World::addSystem(std::unique_ptr<ISystem> _ptr)
+	{
+		m_systems.push_back(std::move(_ptr));
+	}
+
+	void World::updateSystems()
+	{
+		for (size_t i = 0; i < m_systems.size(); i++)
+		{
+			m_systems[i]->update(this);
+		}
+	}
+
 	bool World::hasComponentImpl(const Entity _entity, const size_t _componentId)
 	{
 		EntitySignature& entitySignature = m_entityManager.getSignature(_entity);
