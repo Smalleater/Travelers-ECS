@@ -41,13 +41,13 @@ namespace tra::ecs
 		}
 
 		template<typename T>
-		void addComponent(const Entity _entity, const T& _component)
+		void addComponent(const Entity _entity, T&& _component)
 		{
 			const size_t componentId = ComponentLibrary::getComponent<T>().m_id;
 			addComponentImpl(_entity, componentId,
 				[&_component](uint8_t* _dst)
 				{
-					new(_dst) T(_component);
+					new(_dst) T(std::move(_component));
 				}
 			);
 		}
@@ -63,7 +63,7 @@ namespace tra::ecs
 		T* getComponent(const Entity _entity)
 		{
 			const EntitySignature& signature = m_entityManager.getSignature(_entity);
-			if (!signature.hasComponent(ComponentLibrary::get<T>().m_id))
+			if (!signature.hasComponent(ComponentLibrary::getComponent<T>().m_id))
 			{
 				throw std::runtime_error("TRA ECS: Tried to access a component the entity does not have.");
 			}

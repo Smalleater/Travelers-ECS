@@ -19,7 +19,7 @@ namespace tra::ecs
 		TRA_API static bool matches(const ArchetypeKey& _key, const ArchetypeKey& _required, const ArchetypeKey& _excluded);
 
 		TRA_API void addComponent(const size_t _componentId);
-		void removeComponent(const size_t _componentId);
+		TRA_API void removeComponent(const size_t _componentId);
 
 		bool hasComponent(const size_t _componentId) const;
 	};

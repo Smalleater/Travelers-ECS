@@ -68,10 +68,6 @@ int main()
 	for (size_t i = 0; i < ENTITY_COUNT; i++)
 	{
 		entities[i] = ecsWorld.createEntity();
-		if (i == 5)
-		{
-			continue;
-		}
 
 		ecsWorld.addComponent(entities[i], ecs::TestComponent{});
 		ecsWorld.addTag<ecs::TestTag1>(entities[i]);
@@ -95,6 +91,14 @@ int main()
 	std::chrono::time_point end = mainClock.now();
 	long long duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 	std::cout << "Duration = " << duration << " ms" << std::endl;
+
+	for (size_t i = 0; i < ENTITY_COUNT; i++)
+	{
+		ecsWorld.removeComponent<ecs::TestComponent>(entities[i]);
+		ecsWorld.removeTag<ecs::TestTag1>(entities[i]);
+		ecsWorld.removeComponent<ecs::TestNonTrivialComponent>(entities[i]);
+		ecsWorld.removeTag<ecs::TestTag2>(entities[i]);
+	}
 
 	for (size_t i = 0; i < ENTITY_COUNT; i++)
 	{
