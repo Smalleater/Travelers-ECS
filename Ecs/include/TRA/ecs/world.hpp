@@ -11,7 +11,7 @@
 #include "TRA/ecs/archetype.hpp"
 #include "TRA/ecs/componentLibrary.hpp"
 #include "TRA/ecs/tag.hpp"
-#include "ISystem.hpp"
+#include "TRA/ecs/ISystem.hpp"
 
 namespace tra::ecs
 {
