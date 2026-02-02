@@ -8,7 +8,7 @@
 #include "TRA/ecs/entity.hpp"
 #include "TRA/ecs/entityData.hpp"
 #include "TRA/ecs/entitySignature.hpp"
-#include "TRA/ecs/archetypeKey.hpp"
+#include "TRA/ecs/signatureKey.hpp"
 
 namespace tra::ecs
 {
@@ -17,10 +17,10 @@ namespace tra::ecs
 	class Archetype
 	{
 	public:
-		TRA_API Archetype(const ArchetypeKey& _signature);
+		TRA_API Archetype(const SignatureKey& _signature);
 		~Archetype() = default;
 
-		TRA_API ArchetypeKey getKey();
+		TRA_API SignatureKey getSignatureKey();
 
 		TRA_API void addEntity(const Entity _entity, EntityData& _entityData);
 		TRA_API std::optional<std::pair<EntityId, size_t>> removeEntity(EntityData& _entityData);
@@ -37,7 +37,7 @@ namespace tra::ecs
 		TRA_API uint8_t* getComponentPtr(const EntityData& _entityData, const size_t _componentid);
 
 	private:
-		const ArchetypeKey m_archetypeKey;
+		const SignatureKey m_signatureKey;
 
 		std::vector<size_t> m_componentIds;
 		ChunkLayout m_layout;

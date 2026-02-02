@@ -21,6 +21,12 @@ namespace tra::ecs
 	template<typename... T>
 	struct WithoutComponent {};
 
+	template<typename... T>
+	struct WithTag {};
+
+	template<typename... T>
+	struct WithoutTag {};
+
 	class World
 	{
 	public:
@@ -105,11 +111,13 @@ namespace tra::ecs
 			removeTagImpl(_entity, tagId);
 		}
 
-		template<typename... WithComps, typename... WithoutComps>
+		template<typename... WithComps, typename... WithoutComps, 
+			typename... WithTags, typename... WithoutTags>
 		std::vector<std::tuple<Entity, WithComps*...>> queryEntities(
-			WithComponent<WithComps...> _withComponents, WithoutComponent<WithoutComps...> _withoutComponents = WithoutComponent<>{})
+			WithComponent<WithComps...> _withComponents, WithoutComponent<WithoutComps...> _withoutComponents = WithoutComponent<>{},
+			WithTag<WithTags...> _withTags = WithTag<>{}, WithoutTag<WithoutTags...> _withoutTags= WithoutTag<>{})
 		{
-			ArchetypeKey cashKey;
+			SignatureKey cashKey;
 
 			(cashKey.addComponent(ComponentLibrary::getComponent<WithComps>().m_id), ...);
 			(cashKey.removeComponent(ComponentLibrary::getComponent<WithoutComps>().m_id), ...);
@@ -117,8 +125,8 @@ namespace tra::ecs
 			auto it = m_queryArchetypeCache.find(cashKey);
 			if (it == m_queryArchetypeCache.end())
 			{
-				ArchetypeKey withKey;
-				ArchetypeKey withoutKey;
+				SignatureKey withKey;
+				SignatureKey withoutKey;
 
 				(withKey.addComponent(ComponentLibrary::getComponent<WithComps>().m_id), ...);
 				(withoutKey.addComponent(ComponentLibrary::getComponent<WithoutComps>().m_id), ...);
@@ -156,8 +164,8 @@ namespace tra::ecs
 	private:
 		EntityManager m_entityManager;
 		std::vector<std::unique_ptr<Archetype>> m_archetypes;
-		std::unordered_map<ArchetypeKey, size_t> m_archetypeLookUp;
-		std::unordered_map<ArchetypeKey, std::vector<Archetype*>> m_queryArchetypeCache;
+		std::unordered_map<SignatureKey, size_t> m_archetypeLookUp;
+		std::unordered_map<SignatureKey, std::vector<Archetype*>> m_queryArchetypeCache;
 		std::vector<std::unique_ptr<ISystem>> m_systems;
 
 		TRA_API bool hasComponentImpl(const Entity _entity, const size_t _componentId);
@@ -169,7 +177,7 @@ namespace tra::ecs
 		TRA_API void addTagImpl(const Entity _entity, const size_t _tagId);
 		TRA_API void removeTagImpl(const Entity _entity, const size_t _tagId);
 
-		Archetype* getOrCreateArchetype(const ArchetypeKey _key);
+		Archetype* getOrCreateArchetype(const SignatureKey _key);
 		void copyComponentsToArchetype(Archetype* _srcArch, Archetype* _dstArch,
 			const EntityData& _srcData, const EntityData& _dstData, const EntitySignature& _entitySignature);
 		void removeEntityFromArchetype(Archetype* _archetype, EntityData& _entityData);

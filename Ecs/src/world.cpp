@@ -4,7 +4,7 @@ namespace tra::ecs
 {
 	World::World()
 	{
-		ArchetypeKey key(NULL_ENTITY_SIGNATURE.m_components);
+		SignatureKey key(NULL_ENTITY_SIGNATURE.m_components);
 		std::unique_ptr<Archetype> baseArchetype = std::make_unique<Archetype>(key);
 		m_archetypes.push_back(std::move(baseArchetype));
 		m_archetypeLookUp[key] = m_archetypes.size() - 1;
@@ -13,7 +13,7 @@ namespace tra::ecs
 	Entity World::createEntity()
 	{
 		Entity entity = m_entityManager.createEntity();
-		ArchetypeKey key(NULL_ENTITY_SIGNATURE.m_components);
+		SignatureKey key(NULL_ENTITY_SIGNATURE.m_components);
 
 		m_archetypes.at(m_archetypeLookUp.at(key))->addEntity(entity, m_entityManager.getEntityData(entity));
 
@@ -66,7 +66,7 @@ namespace tra::ecs
 		EntityData oldEntityData = entityData;
 		Archetype* oldArchetype = entityData.m_archetype;
 
-		ArchetypeKey key(entitySignature.m_components);
+		SignatureKey key(entitySignature.m_components);
 		Archetype* archetype = getOrCreateArchetype(key);
 
 		archetype->addEntity(_entity, entityData);
@@ -95,7 +95,7 @@ namespace tra::ecs
 		EntityData oldEntityData = entityData;
 		Archetype* oldArchetype = entityData.m_archetype;
 
-		ArchetypeKey key(entitySignature.m_components);
+		SignatureKey key(entitySignature.m_components);
 		Archetype* archetype = getOrCreateArchetype(key);
 
 		archetype->addEntity(_entity, entityData);
@@ -150,7 +150,7 @@ namespace tra::ecs
 		entitySignature.removeTag(_tagId);
 	}
 
-	Archetype* World::getOrCreateArchetype(const ArchetypeKey _key)
+	Archetype* World::getOrCreateArchetype(const SignatureKey _key)
 	{
 		if (m_archetypeLookUp.find(_key) == m_archetypeLookUp.end())
 		{

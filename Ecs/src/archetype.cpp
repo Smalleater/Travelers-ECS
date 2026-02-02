@@ -11,12 +11,12 @@
 
 namespace tra::ecs
 {
-	Archetype::Archetype(const ArchetypeKey& _signature)
-		: m_archetypeKey(_signature)
+	Archetype::Archetype(const SignatureKey& _signature)
+		: m_signatureKey(_signature)
 	{
 		for (size_t i = 0; i < MAX_COMPONENTS; i++)
 		{
-			if (m_archetypeKey.hasComponent(i))
+			if (m_signatureKey.hasComponent(i))
 			{
 				m_componentIds.push_back(i);
 			}
@@ -25,9 +25,9 @@ namespace tra::ecs
 		m_layout = buildChunkLayout();
 	}
 
-	ArchetypeKey Archetype::getKey()
+	SignatureKey Archetype::getSignatureKey()
 	{
-		return m_archetypeKey;
+		return m_signatureKey;
 	}
 
 	void Archetype::addEntity(const Entity _entity, EntityData& _entityData)
