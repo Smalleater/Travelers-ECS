@@ -16,7 +16,7 @@ namespace tra::ecs
 	{
 		for (size_t i = 0; i < MAX_COMPONENTS; i++)
 		{
-			if (m_signatureKey.hasComponent(i))
+			if (m_signatureKey.hasKey(i))
 			{
 				m_componentIds.push_back(i);
 			}

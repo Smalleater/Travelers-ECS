@@ -6,6 +6,8 @@
 #include <array>
 #include <cstdint>
 
+#include "TRA/ecs/signatureKey.hpp"
+
 namespace tra::ecs
 {
 	constexpr size_t MAX_COMPONENTS = 64;
@@ -16,14 +18,11 @@ namespace tra::ecs
 
 	struct EntitySignature
 	{
-		std::array<uint64_t, COMPONENT_BLOCK> m_components{};
-		std::array<uint64_t, TAG_BLOCK> m_tags{};
+		SignatureKey m_components;
+		SignatureKey m_tags;
 
 		bool operator==(const EntitySignature& _other) const;
 		bool operator!=(const EntitySignature& _other) const;
-
-		static bool matchesComponents(const EntitySignature& _signature, const EntitySignature& _required, const EntitySignature& _excluded);
-		static bool matchesTags(const EntitySignature& _signature, const EntitySignature& _required, const EntitySignature& _excluded);
 
 		TRA_API void addComponent(const size_t _componentId);
 		TRA_API void removeComponent(const size_t _componentId);

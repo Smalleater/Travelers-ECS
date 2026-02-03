@@ -4,7 +4,7 @@ namespace tra::ecs
 {
 	bool SignatureKey::operator==(const SignatureKey& _other) const
 	{
-		return m_components == _other.m_components;
+		return m_keys == _other.m_keys;
 	}
 
 	bool SignatureKey::operator!=(const SignatureKey& _other) const
@@ -12,16 +12,16 @@ namespace tra::ecs
 		return !(*this == _other);
 	}
 
-	bool SignatureKey::matches(const SignatureKey& _key, const SignatureKey& _required, const SignatureKey& _excluded)
+	bool SignatureKey::matches(const SignatureKey& _signatureKey, const SignatureKey& _required, const SignatureKey& _excluded)
 	{
 		for (size_t i = 0; i < BLOCK; i++)
 		{
-			if ((_key.m_components[i] & _required.m_components[i]) != _required.m_components[i])
+			if ((_signatureKey.m_keys[i] & _required.m_keys[i]) != _required.m_keys[i])
 			{
 				return false;
 			}
 
-			if ((_key.m_components[i] & _excluded.m_components[i]) != 0)
+			if ((_signatureKey.m_keys[i] & _excluded.m_keys[i]) != 0)
 			{
 				return false;
 			}
@@ -30,27 +30,27 @@ namespace tra::ecs
 		return true;
 	}
 
-	void SignatureKey::addComponent(const size_t _componentId)
+	void SignatureKey::addKey(const size_t _key)
 	{
-		const size_t block = _componentId >> 6;
-		const uint64_t mask = 1ull << (_componentId & 63);
+		const size_t block = _key >> 6;
+		const uint64_t mask = 1ull << (_key & 63);
 
-		m_components[block] |= mask;
+		m_keys[block] |= mask;
 	}
 
-	void SignatureKey::removeComponent(const size_t _componentId)
+	void SignatureKey::removeKey(const size_t _key)
 	{
-		const size_t block = _componentId >> 6;
-		const uint64_t mask = 1ull << (_componentId & 63);
+		const size_t block = _key >> 6;
+		const uint64_t mask = 1ull << (_key & 63);
 
-		m_components[block] &= ~mask;
+		m_keys[block] &= ~mask;
 	}
 
-	bool SignatureKey::hasComponent(const size_t _componentId) const
+	bool SignatureKey::hasKey(const size_t _key) const
 	{
-		const size_t block = _componentId >> 6;
-		const uint64_t mask = 1ull << (_componentId & 63);
+		const size_t block = _key >> 6;
+		const uint64_t mask = 1ull << (_key & 63);
 
-		return (m_components[block] & mask) != 0;
+		return (m_keys[block] & mask) != 0;
 	}
 }

@@ -119,8 +119,8 @@ namespace tra::ecs
 		{
 			SignatureKey cashKey;
 
-			(cashKey.addComponent(ComponentLibrary::getComponent<WithComps>().m_id), ...);
-			(cashKey.removeComponent(ComponentLibrary::getComponent<WithoutComps>().m_id), ...);
+			(cashKey.addKey(ComponentLibrary::getComponent<WithComps>().m_id), ...);
+			(cashKey.removeKey(ComponentLibrary::getComponent<WithoutComps>().m_id), ...);
 
 			auto it = m_queryArchetypeCache.find(cashKey);
 			if (it == m_queryArchetypeCache.end())
@@ -128,14 +128,14 @@ namespace tra::ecs
 				SignatureKey withKey;
 				SignatureKey withoutKey;
 
-				(withKey.addComponent(ComponentLibrary::getComponent<WithComps>().m_id), ...);
-				(withoutKey.addComponent(ComponentLibrary::getComponent<WithoutComps>().m_id), ...);
+				(withKey.addKey(ComponentLibrary::getComponent<WithComps>().m_id), ...);
+				(withoutKey.addKey(ComponentLibrary::getComponent<WithoutComps>().m_id), ...);
 
 				std::vector<Archetype*> archetypes;
 				for (size_t i = 0; i < m_archetypes.size(); ++i)
 				{
 					Archetype* archetype = m_archetypes.at(i).get();
-					if (ArchetypeKey::matches(archetype->getKey(), withKey, withoutKey))
+					if (SignatureKey::matches(archetype->getSignatureKey(), withKey, withoutKey))
 					{
 						archetypes.push_back(archetype);
 					}

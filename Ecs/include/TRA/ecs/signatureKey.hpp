@@ -12,21 +12,21 @@ namespace tra::ecs
 
 	struct SignatureKey
 	{
-		std::array<uint64_t, BLOCK> m_components{};
+		std::array<uint64_t, BLOCK> m_keys{};
 
 		SignatureKey() = default;
-		SignatureKey(const Signature& _other) = default;
+		SignatureKey(const SignatureKey&) = default;
 		~SignatureKey() = default;
 
 		TRA_API bool operator==(const SignatureKey& _other) const;
 		bool operator!=(const SignatureKey& _other) const;
 
-		TRA_API static bool matches(const SignatureKey& _key, const SignatureKey& _required, const SignatureKey& _excluded);
+		TRA_API static bool matches(const SignatureKey& _signatureKey, const SignatureKey& _required, const SignatureKey& _excluded);
 
-		TRA_API void addComponent(const size_t _componentId);
-		TRA_API void removeComponent(const size_t _componentId);
+		TRA_API void addKey(const size_t _key);
+		TRA_API void removeKey(const size_t _key);
 
-		bool hasComponent(const size_t _componentId) const;
+		bool hasKey(const size_t _key) const;
 	};
 }
 
@@ -35,13 +35,13 @@ namespace std
 	template<>
 	struct hash<tra::ecs::SignatureKey>
 	{
-		size_t operator()(const tra::ecs::SignatureKey& _key) const
+		size_t operator()(const tra::ecs::SignatureKey& _signaturekey) const
 		{
 			size_t hash = 0;
 
 			for (size_t i = 0; i < tra::ecs::BLOCK; i++)
 			{
-				hash ^= std::hash<uint64_t>{}(_key.m_components[i]) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
+				hash ^= std::hash<uint64_t>{}(_signaturekey.m_keys[i]) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
 			}
 
 			return hash;
