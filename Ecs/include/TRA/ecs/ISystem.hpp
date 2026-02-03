@@ -3,12 +3,12 @@
 
 namespace tra::ecs
 {
-	class Engine;
+	class World;
 
 	struct ISystem
 	{
-		virtual ~ISystem() = default;
-		virtual void update(Engine* _engine) = 0;
+		~ISystem() = default;
+		virtual void update(World* _world) = 0;
 	};
 }
 

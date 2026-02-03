@@ -1,17 +1,17 @@
 #ifndef TRA_ECS_COMPONENT_HPP
 #define TRA_ECS_COMPONENT_HPP
 
-#include "TRA/ecs/iComponent.hpp"
-#include "TRA/ecs/autoRegisterComponent.hpp"
+#include "TRA/ecs/componentRegister.hpp"
 
-#define TRA_CREATE_COMPONENT(NAME, ...) \
-struct NAME : tra::ecs::IComponent \
+#define TRA_ECS_REGISTER_COMPONENT(NAME, ...) \
+namespace tra::ecs \
 { \
-	__VA_ARGS__ \
-private: \
-	static inline tra::ecs::AutoRegisterComponent<NAME> m_registrar{}; \
-}; \
-
-TRA_CREATE_COMPONENT(DeleteEntityTag);
+	struct NAME \
+	{ \
+		__VA_ARGS__ \
+	private: \
+		static inline ComponentRegister<NAME> m_registrar{}; \
+	}; \
+} \
 
 #endif

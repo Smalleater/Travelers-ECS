@@ -1,122 +1,111 @@
-#include <thread>
+#include <iostream>
+#include <string>
 #include <chrono>
 
-#include "TRA/ecs/engine.hpp"
+#include "TRA/ecs/world.hpp"
+#include "TRA/ecs/component.hpp"
+#include "TRA/ecs/tag.hpp"
 
-#include "common.hpp"
+using namespace tra;
 
-#include "component.hpp"
-#include "addTestComponentSystem.hpp"
-#include "querryEntityBufferTestSystem.hpp"
+constexpr size_t ENTITY_COUNT = 100000;
 
-struct CreateEntitySystem : public ecs::ISystem
+TRA_ECS_REGISTER_TAG(TestTag1);
+TRA_ECS_REGISTER_TAG(TestTag2);
+
+TRA_ECS_REGISTER_COMPONENT(TestComponent,
+	int m_int = 2;
+	float m_float = 0.1f;
+)
+
+TRA_ECS_REGISTER_COMPONENT(TestNonTrivialComponent,
+	int m_int;
+	float m_float;
+	std::string m_string;
+
+	TestNonTrivialComponent(int _int, float _float, std::string _string) : m_int(_int), m_float(_float), m_string(_string) {}
+)
+
+struct SystemTest : public ecs::ISystem
 {
-	void update(ecs::Engine* _engine) override
+	void update(ecs::World* _world) override
 	{
-		for (size_t i = 0; i < ENTITY_COUNT; i++)
+		for (size_t i = 0; i < 7; i++)
 		{
-			entities[i] = _engine->createEntity();
-		}
-	}
-};
-
-struct GetTestComponentSystem : public ecs::ISystem
-{
-	void update(ecs::Engine* _engine) override
-	{
-		TestComponent0 testComponent;
-		for (size_t i = 0; i < ENTITY_COUNT; i++)
-		{
-			if (_engine->entityHasComponent<TestComponent0>(entities[i]))
+			for (auto& [entity, nonTrivialComponentPtr] : _world->queryEntities(
+				ecs::WithComponent<ecs::TestNonTrivialComponent>{}, 
+				ecs::WithoutComponent<>{}, 
+				ecs::WithTag<ecs::TestTag1>{}, 
+				ecs::WithoutTag<ecs::TestTag2>{}))
 			{
-				testComponent = _engine->getEntityComponent<TestComponent0>(entities[i]);
-				++testComponent.test;
-				--testComponent.test;
+				std::cout << "EntityId: " << std::to_string(entity.id()) << " ComponentValue: int-" << nonTrivialComponentPtr->m_int
+					<< " float-" << nonTrivialComponentPtr->m_float << " string-" << nonTrivialComponentPtr->m_string << std::endl;
 			}
-		}
-	}
-};
-
-struct QuerryWithTestSystem : public ecs::ISystem
-{
-	void update(ecs::Engine* _engine) override
-	{
-		std::vector<ecs::Entity> queryResult;
-		queryResult = _engine->queryEntityWith<TestComponent0>(entities);
-		queryResult = _engine->queryEntityWith<TestComponent1>(entities);
-		queryResult = _engine->queryEntityWith<TestComponent0, TestComponent2>(entities);
-	}
-};
-
-struct QuerryWithoutTestSystem : public ecs::ISystem
-{
-	void update(ecs::Engine* _engine) override
-	{
-		std::vector<ecs::Entity> queryResult;
-		queryResult = _engine->queryEntityWithout<TestComponent0>(entities);
-		queryResult = _engine->queryEntityWithout<TestComponent1>(entities);
-		queryResult = _engine->queryEntityWithout<TestComponent0, TestComponent2>(entities);
-	}
-};
-
-
-struct RemoveTestComponentSystem : public ecs::ISystem
-{
-	void update(ecs::Engine* _engine) override
-	{
-		for (size_t i = 0; i < ENTITY_COUNT; i++)
-		{
-			_engine->removeComponentFromEntity<TestComponent0>(entities[i]);
-		}
-	}
-};
-
-struct DeleteEntitySystem : public ecs::ISystem
-{
-	void update(ecs::Engine* _engine) override
-	{
-		for (size_t i = 0; i < ENTITY_COUNT; i++)
-		{
-			_engine->deleteEntity(entities[i]);
 		}
 	}
 };
 
 int main()
 {
-	std::cout << "Create ECS\n";
-	ecs::Engine ecsEngine;
+	ecs::World ecsWorld;
 
-	CreateEntitySystem createEntity;
-	createEntity.update(&ecsEngine);
+	ecsWorld.addSystem(std::make_unique<SystemTest>());
 
-	/*AddTestComponentSystem addTestComponent;
-	addTestComponent.update(&ecsEngine);*/
+	std::cout << "TestComponent\n";
+	std::cout << "sizeof: " << sizeof(ecs::TestComponent) << "\n";
+	std::cout << "align:  " << alignof(ecs::TestComponent) << "\n";
 
-	//ecsEngine.addBeginUpdateSystem<CreateEntitySystem>();
-	ecsEngine.addBeginUpdateSystem<AddTestComponentSystem>();
-	//ecsEngine.addBeginUpdateSystem<GetTestComponentSystem>();
-	//ecsEngine.addBeginUpdateSystem<QuerryWithTestSystem>();
-	//ecsEngine.addBeginUpdateSystem<QuerryWithoutTestSystem>();
-	ecsEngine.addBeginUpdateSystem<QuerryEntityBufferTestSystem>();
+	std::cout << "TestNonTrivialComponent\n";
+	std::cout << "sizeof: " << sizeof(ecs::TestNonTrivialComponent) << "\n";
+	std::cout << "align:  " << alignof(ecs::TestNonTrivialComponent) << "\n";
 
-	ecsEngine.addEndUpdateSystem<RemoveTestComponentSystem>();
-	//ecsEngine.addEndUpdateSystem<DeleteEntitySystem>();
+	system("pause");
 
-	std::cout << "End Init\n";
+	std::cout << std::endl;
 
-	while (true)
+	std::vector<ecs::Entity> entities;
+	entities.resize(ENTITY_COUNT, ecs::NULL_ENTITY);
+
+	std::chrono::high_resolution_clock mainClock;
+	
+	for (size_t i = 0; i < ENTITY_COUNT; i++)
 	{
-		auto start = std::chrono::high_resolution_clock::now();
+		entities[i] = ecsWorld.createEntity();
 
-		ecsEngine.beginUpdate();
-
-		ecsEngine.endUpdate();
-
-		auto end = std::chrono::high_resolution_clock::now();
-		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-		std::cout << "Update duration: " << duration << " microseconds\n";
+		ecsWorld.addComponent(entities[i], ecs::TestComponent{});
+		ecsWorld.addComponent(entities[i], ecs::TestNonTrivialComponent(5, 6.3f, "World Hello"));
+		ecsWorld.addTag<ecs::TestTag1>(entities[i]);
+		ecsWorld.addTag<ecs::TestTag2>(entities[i]);
 	}
+
+	std::cout << "Start remove component" << std::endl;
+
+	std::cout << std::endl;
+	std::cout << "Query: " << std::endl;
+	std::cout << std::endl;
+
+	std::chrono::time_point start = mainClock.now();
+
+	ecsWorld.updateSystems();
+
+	std::chrono::time_point end = mainClock.now();
+	long long duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+	std::cout << "Duration = " << duration << " ms" << std::endl;
+
+	for (size_t i = 0; i < ENTITY_COUNT; i++)
+	{ 
+		ecsWorld.removeComponent<ecs::TestComponent>(entities[i]);
+		ecsWorld.removeTag<ecs::TestTag1>(entities[i]);
+		ecsWorld.removeComponent<ecs::TestNonTrivialComponent>(entities[i]);
+		ecsWorld.removeTag<ecs::TestTag2>(entities[i]);
+	}
+
+	for (size_t i = 0; i < ENTITY_COUNT; i++)
+	{
+		ecsWorld.destroyEntity(entities[i]);
+	}
+
+	system("pause");
 
 	return 0;
 }

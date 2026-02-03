@@ -1,44 +1,76 @@
 #include "TRA/ecs/entityManager.hpp"
 
-#include <limits>
-
-#include "TRA/debugUtils.hpp"
+#include <stdexcept>
 
 namespace tra::ecs
 {
-	Entity EntityManager::createEntity()
+	EntityManager::EntityManager()
+		: m_nextFreeId(1)
 	{
-		if (m_freeEntity.empty())
-		{
-			EntityId newId = static_cast<EntityId>(m_entities.size());
-
-			if (newId == 0)
-			{
-				newId = 1;
-			}
-
-			if (m_entities.size() < newId)
-			{
-				m_entities.resize(newId);
-			}
-
-			return m_entities.emplace_back(Entity{ newId, 0 });
-		}
-
-		EntityId entityId = m_freeEntity.front();
-		m_freeEntity.pop();
-
-		return m_entities[entityId];
+		m_entities.push_back(NULL_ENTITY);
+		m_signatures.push_back(NULL_ENTITY_SIGNATURE);
 	}
 
-	void EntityManager::Delete(const Entity& _entity)
+	Entity EntityManager::createEntity()
 	{
-		if (_entity.m_id == Entity::Null.m_id)
+		EntityId id;
+
+		if (!m_freeIds.empty())
+		{
+			id = m_freeIds.back();
+			m_freeIds.pop_back();
+		}
+		else
+		{
+			if (m_nextFreeId >= MAX_ENTITIES)
+			{
+				throw std::runtime_error("TRA ECS: Max entities reached.");
+			}
+
+			id = m_nextFreeId++;
+
+			if (id >= m_entities.size())
+			{
+				m_entities.resize(id + 1, NULL_ENTITY);
+				m_entitiesData.resize(id + 1);
+				m_signatures.resize(id + 1, NULL_ENTITY_SIGNATURE);
+			}
+		}
+
+		m_entities[id] = makeEntity(id, m_entities[id].version());
+
+		return m_entities[id];
+	}
+
+	void EntityManager::deleteEntity(Entity _entity)
+	{
+		EntityId entityId = _entity.id();
+
+		if (entityId == NULL_ENTITY.id()
+			|| entityId >= m_entities.size())
 		{
 			return;
 		}
 
-		++m_entities[_entity.m_id].m_version;
-		m_freeEntity.emplace(_entity.m_id);
+		m_entities[entityId] = makeEntity(entityId, _entity.version() + 1);
+		m_entitiesData[entityId] = EntityData();
+		m_signatures[entityId] = NULL_ENTITY_SIGNATURE;
+
+		m_freeIds.push_back(_entity.id());
+	}
+
+	Entity& EntityManager::getEntityById(const EntityId _id)
+	{
+		return m_entities.at(_id);
+	}
+
+	EntityData& EntityManager::getEntityData(const Entity _entity)
+	{
+		return m_entitiesData.at(_entity.id());
+	}
+
+	EntitySignature& EntityManager::getSignature(const Entity _entity)
+	{
+		return m_signatures.at(_entity.id());
 	}
 }
