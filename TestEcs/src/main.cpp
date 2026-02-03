@@ -8,7 +8,7 @@
 
 using namespace tra;
 
-constexpr size_t ENTITY_COUNT = 10000;
+constexpr size_t ENTITY_COUNT = 100000;
 
 TRA_ECS_REGISTER_TAG(TestTag1);
 TRA_ECS_REGISTER_TAG(TestTag2);
@@ -33,10 +33,13 @@ struct SystemTest : public ecs::ISystem
 		for (size_t i = 0; i < 7; i++)
 		{
 			for (auto& [entity, nonTrivialComponentPtr] : _world->queryEntities(
-				ecs::WithComponent<ecs::TestNonTrivialComponent>{}))
+				ecs::WithComponent<ecs::TestNonTrivialComponent>{}, 
+				ecs::WithoutComponent<>{}, 
+				ecs::WithTag<ecs::TestTag1>{}, 
+				ecs::WithoutTag<ecs::TestTag2>{}))
 			{
-				/*std::cout << "EntityId: " << std::to_string(entity.id()) << " ComponentValue: int-" << nonTrivialComponentPtr->m_int
-					<< " float-" << nonTrivialComponentPtr->m_float << " string-" << nonTrivialComponentPtr->m_string << std::endl;*/
+				std::cout << "EntityId: " << std::to_string(entity.id()) << " ComponentValue: int-" << nonTrivialComponentPtr->m_int
+					<< " float-" << nonTrivialComponentPtr->m_float << " string-" << nonTrivialComponentPtr->m_string << std::endl;
 			}
 		}
 	}
@@ -70,13 +73,10 @@ int main()
 		entities[i] = ecsWorld.createEntity();
 
 		ecsWorld.addComponent(entities[i], ecs::TestComponent{});
-		ecsWorld.addTag<ecs::TestTag1>(entities[i]);
 		ecsWorld.addComponent(entities[i], ecs::TestNonTrivialComponent(5, 6.3f, "World Hello"));
+		ecsWorld.addTag<ecs::TestTag1>(entities[i]);
 		ecsWorld.addTag<ecs::TestTag2>(entities[i]);
 	}
-
-	std::cout << "Entity 5 haseComponent TestComponent: " << ecsWorld.hasComponent<ecs::TestComponent>(entities[5]) << std::endl;
-	std::cout << "Entity 5 haseTag TestTag2: " << ecsWorld.hasTag<ecs::TestTag2>(entities[5]) << std::endl;
 
 	std::cout << "Start remove component" << std::endl;
 
@@ -93,7 +93,7 @@ int main()
 	std::cout << "Duration = " << duration << " ms" << std::endl;
 
 	for (size_t i = 0; i < ENTITY_COUNT; i++)
-	{
+	{ 
 		ecsWorld.removeComponent<ecs::TestComponent>(entities[i]);
 		ecsWorld.removeTag<ecs::TestTag1>(entities[i]);
 		ecsWorld.removeComponent<ecs::TestNonTrivialComponent>(entities[i]);

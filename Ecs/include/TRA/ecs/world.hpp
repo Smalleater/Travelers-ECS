@@ -120,22 +120,21 @@ namespace tra::ecs
 			SignatureKey cashKey;
 
 			(cashKey.addKey(ComponentLibrary::getComponent<WithComps>().m_id), ...);
-			(cashKey.removeKey(ComponentLibrary::getComponent<WithoutComps>().m_id), ...);
 
 			auto it = m_queryArchetypeCache.find(cashKey);
 			if (it == m_queryArchetypeCache.end())
 			{
-				SignatureKey withKey;
-				SignatureKey withoutKey;
+				SignatureKey withComponent;
+				SignatureKey withoutComponent;
 
-				(withKey.addKey(ComponentLibrary::getComponent<WithComps>().m_id), ...);
-				(withoutKey.addKey(ComponentLibrary::getComponent<WithoutComps>().m_id), ...);
+				(withComponent.addKey(ComponentLibrary::getComponent<WithComps>().m_id), ...);
+				(withoutComponent.addKey(ComponentLibrary::getComponent<WithoutComps>().m_id), ...);
 
 				std::vector<Archetype*> archetypes;
 				for (size_t i = 0; i < m_archetypes.size(); ++i)
 				{
 					Archetype* archetype = m_archetypes.at(i).get();
-					if (SignatureKey::matches(archetype->getSignatureKey(), withKey, withoutKey))
+					if (SignatureKey::matches(archetype->getSignatureKey(), withComponent, withoutComponent))
 					{
 						archetypes.push_back(archetype);
 					}
@@ -145,6 +144,12 @@ namespace tra::ecs
 				it = result.first;
 			}
 
+			SignatureKey withTag;
+			SignatureKey withoutTag;
+
+			(withTag.addKey(TagLibrary::getTagId<WithTags>()), ...);
+			(withoutTag.addKey(TagLibrary::getTagId<WithoutTags>()), ...);
+
 			std::vector<std::tuple<Entity, WithComps*...>> result;
 
 			for (auto archetype : it->second)
@@ -152,9 +157,14 @@ namespace tra::ecs
 				for (EntityId entityId : archetype->getEntitiesId())
 				{
 					Entity entity = m_entityManager.getEntityById(entityId);
-					EntityData& entityData = m_entityManager.getEntityData(entity);
+					EntitySignature signature = m_entityManager.getSignature(entity);
 
-					result.emplace_back(entity, archetype->getComponentPtr<WithComps>(entityData)...);
+					if (SignatureKey::matches(signature.m_tags, withTag, withoutTag))
+					{
+						EntityData& entityData = m_entityManager.getEntityData(entity);
+
+						result.emplace_back(entity, archetype->getComponentPtr<WithComps>(entityData)...);
+					}
 				}
 			}
 
