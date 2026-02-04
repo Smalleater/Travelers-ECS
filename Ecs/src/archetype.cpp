@@ -4,6 +4,7 @@
 #include <malloc.h>
 #include <algorithm>
 #include <stdexcept>
+#include <cstring>
 
 #include "TRA/ecs/entity.hpp"
 #include "TRA/ecs/entityData.hpp"
@@ -270,7 +271,12 @@ namespace tra::ecs
 		chunk.m_capacity = m_layout.m_capacity;
 		chunk.m_count = 0;
 
+#ifdef _WIN32
 		chunk.m_data = static_cast<uint8_t*>(_aligned_malloc(m_layout.m_chunkSize, 64));
+#elif defined(__unix__) || defined(__APPLE__)
+		chunk.m_data = static_cast<uint8_t*>(aligned_alloc(64, m_layout.m_chunkSize));
+#endif
+
 		if (!chunk.m_data) {
 			throw std::bad_alloc();
 		}

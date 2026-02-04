@@ -34,12 +34,10 @@ struct SystemTest : public ecs::ISystem
 		{
 			for (auto& [entity, nonTrivialComponentPtr] : _world->queryEntities(
 				ecs::WithComponent<ecs::TestNonTrivialComponent>{}, 
-				ecs::WithoutComponent<>{}, 
-				ecs::WithTag<ecs::TestTag1>{}, 
-				ecs::WithoutTag<ecs::TestTag2>{}))
+				ecs::WithoutComponent<>{}))
 			{
-				std::cout << "EntityId: " << std::to_string(entity.id()) << " ComponentValue: int-" << nonTrivialComponentPtr->m_int
-					<< " float-" << nonTrivialComponentPtr->m_float << " string-" << nonTrivialComponentPtr->m_string << std::endl;
+				/*std::cout << "EntityId: " << std::to_string(entity.id()) << " ComponentValue: int-" << nonTrivialComponentPtr->m_int
+					<< " float-" << nonTrivialComponentPtr->m_float << " string-" << nonTrivialComponentPtr->m_string << std::endl;*/
 			}
 		}
 	}
@@ -58,8 +56,6 @@ int main()
 	std::cout << "TestNonTrivialComponent\n";
 	std::cout << "sizeof: " << sizeof(ecs::TestNonTrivialComponent) << "\n";
 	std::cout << "align:  " << alignof(ecs::TestNonTrivialComponent) << "\n";
-
-	system("pause");
 
 	std::cout << std::endl;
 
@@ -104,8 +100,6 @@ int main()
 	{
 		ecsWorld.destroyEntity(entities[i]);
 	}
-
-	system("pause");
 
 	return 0;
 }
