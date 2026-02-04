@@ -67,6 +67,8 @@ Performance benchmarks across platforms:
 | Set component | 29 ns | 24 ns |
 | Update system | 3.47 ms | 2.49 ms |
 
+<img width="1653" height="993" alt="Picture2" src="https://github.com/user-attachments/assets/79941288-847e-4a28-a689-f590a797dad4" />
+
 > **Note:** Linux generally shows better performance for most operations, particularly for tags and system updates.  
 > System update times are O(n) relative to the number of entities in archetypes matching the query.  
 > During tests, queries typically returned all entities used in the test (worst-case scenario).
