@@ -19,7 +19,7 @@ Queries currently have decent performance, but they're not yet at the same level
 
 ## 📊 Benchmarks
 
-Performance benchmarks across platforms (times in nanoseconds):
+Performance benchmarks across platforms:
 
 **Test Hardware:**
 - **CPU:** Intel Core i7-12700K
