@@ -23,7 +23,7 @@ Performance benchmarks across platforms (times in nanoseconds):
 
 **Test Hardware:**
 - **CPU:** Intel Core i7-12700K
-- **RAM:** 32GB at 4400MHz
+- **RAM:** 32GB @ 4400MHz
 - **Storage:** SSD
 
 ### 1,000 Entities
@@ -37,7 +37,7 @@ Performance benchmarks across platforms (times in nanoseconds):
 | Remove component | 82 ns | 84 ns |
 | Get component | 45 ns | 27 ns |
 | Set component | 31 ns | 24 ns |
-| Update system | 31,009 ns | 21,213 ns |
+| Update system | 31.0 µs | 21.2 µs |
 
 ### 10,000 Entities
 | Operation | Windows | Linux |
@@ -50,7 +50,7 @@ Performance benchmarks across platforms (times in nanoseconds):
 | Remove component | 81 ns | 85 ns |
 | Get component | 45 ns | 27 ns |
 | Set component | 30 ns | 23 ns |
-| Update system | 308,566 ns | 229,498 ns |
+| Update system | 308.6 µs | 229.5 µs |
 
 ### 100,000 Entities
 | Operation | Windows | Linux |
@@ -63,9 +63,11 @@ Performance benchmarks across platforms (times in nanoseconds):
 | Remove component | 80 ns | 86 ns |
 | Get component | 45 ns | 28 ns |
 | Set component | 29 ns | 24 ns |
-| Update system | 3,466,779 ns | 2,487,759 ns |
+| Update system | 3.47 ms | 2.49 ms |
 
-> **Note:** Linux generally shows better performance for most operations, particularly for tags and system updates.
+> **Note:** Linux generally shows better performance for most operations, particularly for tags and system updates.  
+> System update times are O(n) relative to the number of entities in archetypes matching the query.  
+> During tests, queries typically returned all entities used in the test (worst-case scenario).
 
 ---
 
