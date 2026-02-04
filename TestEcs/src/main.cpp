@@ -15,30 +15,41 @@ TRA_ECS_REGISTER_TAG(TestTag2);
 
 TRA_ECS_REGISTER_COMPONENT(TestComponent,
 	int m_int = 2;
-	float m_float = 0.1f;
+float m_float = 0.1f;
 )
 
 TRA_ECS_REGISTER_COMPONENT(TestNonTrivialComponent,
 	int m_int;
-	float m_float;
-	std::string m_string;
+float m_float;
+std::string m_string;
 
-	TestNonTrivialComponent(int _int, float _float, std::string _string) : m_int(_int), m_float(_float), m_string(_string) {}
+TestNonTrivialComponent(int _int, float _float, std::string _string) : m_int(_int), m_float(_float), m_string(_string) {}
 )
 
-struct SystemTest : public ecs::ISystem
+struct BeginSystemTest : public ecs::ISystem
 {
 	void update(ecs::World* _world) override
 	{
-		for (size_t i = 0; i < 7; i++)
+		for (auto& [entity, nonTrivialComponentPtr] : _world->queryEntities(
+			ecs::WithComponent<ecs::TestNonTrivialComponent>{},
+			ecs::WithoutComponent<>{}))
 		{
-			for (auto& [entity, nonTrivialComponentPtr] : _world->queryEntities(
-				ecs::WithComponent<ecs::TestNonTrivialComponent>{}, 
-				ecs::WithoutComponent<>{}))
-			{
-				/*std::cout << "EntityId: " << std::to_string(entity.id()) << " ComponentValue: int-" << nonTrivialComponentPtr->m_int
-					<< " float-" << nonTrivialComponentPtr->m_float << " string-" << nonTrivialComponentPtr->m_string << std::endl;*/
-			}
+			/*std::cout << "EntityId: " << std::to_string(entity.id()) << " ComponentValue: int-" << nonTrivialComponentPtr->m_int
+				<< " float-" << nonTrivialComponentPtr->m_float << " string-" << nonTrivialComponentPtr->m_string << std::endl;*/
+		}
+	}
+};
+
+struct EndSystemTest : public ecs::ISystem
+{
+	void update(ecs::World* _world) override
+	{
+		for (auto& [entity, nonTrivialComponentPtr] : _world->queryEntities(
+			ecs::WithComponent<ecs::TestNonTrivialComponent>{},
+			ecs::WithoutComponent<>{}))
+		{
+			/*std::cout << "EntityId: " << std::to_string(entity.id()) << " ComponentValue: int-" << nonTrivialComponentPtr->m_int
+				<< " float-" << nonTrivialComponentPtr->m_float << " string-" << nonTrivialComponentPtr->m_string << std::endl;*/
 		}
 	}
 };
@@ -47,7 +58,9 @@ int main()
 {
 	ecs::World ecsWorld;
 
-	ecsWorld.addSystem(std::make_unique<SystemTest>());
+	ecsWorld.addBeginSystem(std::make_unique<BeginSystemTest>());
+
+	ecsWorld.addEndSystem(std::make_unique<EndSystemTest>());
 
 	std::cout << "TestComponent\n";
 	std::cout << "sizeof: " << sizeof(ecs::TestComponent) << "\n";
@@ -63,7 +76,7 @@ int main()
 	entities.resize(ENTITY_COUNT, ecs::NULL_ENTITY);
 
 	std::chrono::high_resolution_clock mainClock;
-	
+
 	for (size_t i = 0; i < ENTITY_COUNT; i++)
 	{
 		entities[i] = ecsWorld.createEntity();
@@ -82,14 +95,15 @@ int main()
 
 	std::chrono::time_point start = mainClock.now();
 
-	ecsWorld.updateSystems();
+	ecsWorld.updateBeginSystems();
+	ecsWorld.updateEndSystems();
 
 	std::chrono::time_point end = mainClock.now();
 	long long duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 	std::cout << "Duration = " << duration << " ms" << std::endl;
 
 	for (size_t i = 0; i < ENTITY_COUNT; i++)
-	{ 
+	{
 		ecsWorld.removeComponent<ecs::TestComponent>(entities[i]);
 		ecsWorld.removeTag<ecs::TestTag1>(entities[i]);
 		ecsWorld.removeComponent<ecs::TestNonTrivialComponent>(entities[i]);

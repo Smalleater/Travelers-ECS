@@ -31,16 +31,29 @@ namespace tra::ecs
 		m_entityManager.deleteEntity(_entity);
 	}
 
-	void World::addSystem(std::unique_ptr<ISystem> _ptr)
+	void World::addBeginSystem(std::unique_ptr<ISystem> _ptr)
 	{
-		m_systems.push_back(std::move(_ptr));
+		m_beginSystems.push_back(std::move(_ptr));
 	}
 
-	void World::updateSystems()
+	void World::addEndSystem(std::unique_ptr<ISystem> _ptr)
 	{
-		for (size_t i = 0; i < m_systems.size(); i++)
+		m_endSystems.push_back(std::move(_ptr));
+	}
+
+	void World::updateBeginSystems()
+	{
+		for (size_t i = 0; i < m_beginSystems.size(); i++)
 		{
-			m_systems[i]->update(this);
+			m_beginSystems[i]->update(this);
+		}
+	}
+
+	void World::updateEndSystems()
+	{
+		for (size_t i = 0; i < m_endSystems.size(); i++)
+		{
+			m_endSystems[i]->update(this);
 		}
 	}
 
