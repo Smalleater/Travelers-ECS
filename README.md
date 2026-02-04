@@ -26,6 +26,8 @@ Performance benchmarks across platforms (times in nanoseconds):
 - **RAM:** 32GB @ 4400MHz
 - **Storage:** SSD
 
+> 📁 **Benchmark repository:** [Travelers-ECS-Benchmark](https://github.com/Smalleater/Travelers-ECS-Benchmark)
+
 ### 1,000 Entities
 | Operation | Windows | Linux |
 |-----------|---------|-------|
