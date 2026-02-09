@@ -31,7 +31,7 @@ struct BeginSystemTest : public ecs::ISystem
 	void update(ecs::World* _world) override
 	{
 		for (auto& [entity, nonTrivialComponentPtr] : _world->queryEntities(
-			ecs::WithComponent<ecs::TestNonTrivialComponent>{},
+			ecs::WithComponent<TestNonTrivialComponent>{},
 			ecs::WithoutComponent<>{}))
 		{
 			/*std::cout << "EntityId: " << std::to_string(entity.id()) << " ComponentValue: int-" << nonTrivialComponentPtr->m_int
@@ -45,7 +45,7 @@ struct EndSystemTest : public ecs::ISystem
 	void update(ecs::World* _world) override
 	{
 		for (auto& [entity, nonTrivialComponentPtr] : _world->queryEntities(
-			ecs::WithComponent<ecs::TestNonTrivialComponent>{},
+			ecs::WithComponent<TestNonTrivialComponent>{},
 			ecs::WithoutComponent<>{}))
 		{
 			/*std::cout << "EntityId: " << std::to_string(entity.id()) << " ComponentValue: int-" << nonTrivialComponentPtr->m_int
@@ -63,12 +63,12 @@ int main()
 	ecsWorld.addEndSystem(std::make_unique<EndSystemTest>());
 
 	std::cout << "TestComponent\n";
-	std::cout << "sizeof: " << sizeof(ecs::TestComponent) << "\n";
-	std::cout << "align:  " << alignof(ecs::TestComponent) << "\n";
+	std::cout << "sizeof: " << sizeof(TestComponent) << "\n";
+	std::cout << "align:  " << alignof(TestComponent) << "\n";
 
 	std::cout << "TestNonTrivialComponent\n";
-	std::cout << "sizeof: " << sizeof(ecs::TestNonTrivialComponent) << "\n";
-	std::cout << "align:  " << alignof(ecs::TestNonTrivialComponent) << "\n";
+	std::cout << "sizeof: " << sizeof(TestNonTrivialComponent) << "\n";
+	std::cout << "align:  " << alignof(TestNonTrivialComponent) << "\n";
 
 	std::cout << std::endl;
 
@@ -81,10 +81,10 @@ int main()
 	{
 		entities[i] = ecsWorld.createEntity();
 
-		ecsWorld.addComponent(entities[i], ecs::TestComponent{});
-		ecsWorld.addComponent(entities[i], ecs::TestNonTrivialComponent(5, 6.3f, "World Hello"));
-		ecsWorld.addTag<ecs::TestTag1>(entities[i]);
-		ecsWorld.addTag<ecs::TestTag2>(entities[i]);
+		ecsWorld.addComponent(entities[i], TestComponent{});
+		ecsWorld.addComponent(entities[i], TestNonTrivialComponent(5, 6.3f, "World Hello"));
+		ecsWorld.addTag<TestTag1>(entities[i]);
+		ecsWorld.addTag<TestTag2>(entities[i]);
 	}
 
 	std::cout << "Start remove component" << std::endl;
@@ -104,10 +104,10 @@ int main()
 
 	for (size_t i = 0; i < ENTITY_COUNT; i++)
 	{
-		ecsWorld.removeComponent<ecs::TestComponent>(entities[i]);
-		ecsWorld.removeTag<ecs::TestTag1>(entities[i]);
-		ecsWorld.removeComponent<ecs::TestNonTrivialComponent>(entities[i]);
-		ecsWorld.removeTag<ecs::TestTag2>(entities[i]);
+		ecsWorld.removeComponent<TestComponent>(entities[i]);
+		ecsWorld.removeTag<TestTag1>(entities[i]);
+		ecsWorld.removeComponent<TestNonTrivialComponent>(entities[i]);
+		ecsWorld.removeTag<TestTag2>(entities[i]);
 	}
 
 	for (size_t i = 0; i < ENTITY_COUNT; i++)
