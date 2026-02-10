@@ -15,14 +15,13 @@ add_library(tra_ecs SHARED ${SOURCES})
 # Set include directories (public headers and internal headers)
 target_include_directories(tra_ecs
     PUBLIC
-        ${COMMON_INCLUDE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     PRIVATE 
         ${CMAKE_CURRENT_SOURCE_DIR}/internal
 )
 
 # Define export macro for DLL/SO symbol visibility
-target_compile_definitions(tra_ecs PRIVATE TRA_EXPORTS)
+target_compile_definitions(tra_ecs PRIVATE TRA_ECS_EXPORTS)
 
 target_compile_definitions(tra_ecs
     PUBLIC
@@ -42,8 +41,3 @@ file(GLOB HEADER_FILES "${CMAKE_CURRENT_SOURCE_DIR}/include/TRA/ecs/*")
 add_custom_command(TARGET tra_ecs POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
     ${HEADER_FILES} ${COMMON_EXPORT_INCLUDE_DIR}/ecs/)
-
-file(GLOB HEADER_FILES "${COMMON_INCLUDE_DIR}/TRA/*")
-add_custom_command(TARGET tra_ecs POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    ${HEADER_FILES} ${COMMON_EXPORT_INCLUDE_DIR}/)
