@@ -57,6 +57,18 @@ namespace tra::ecs
 		}
 	}
 
+	uint8_t* World::getComponentPtrById(const Entity _entity, const size_t _componentId)
+	{
+		const EntitySignature& signature = m_entityManager.getSignature(_entity);
+		if (!signature.hasComponent(_componentId))
+		{
+			throw std::runtime_error("TRA ECS: Tried to access a component the entity does not have.");
+		}
+
+		EntityData& entityData = m_entityManager.getEntityData(_entity);
+		return entityData.m_archetype->getComponentPtr(entityData, _componentId);
+	}
+
 	bool World::hasComponentImpl(const Entity _entity, const size_t _componentId)
 	{
 		EntitySignature& entitySignature = m_entityManager.getSignature(_entity);
